@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>Weather API Key</key>
+	<string>$(WEATHER_API_KEY)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Allow geolocation access to get weather data based on your current location</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

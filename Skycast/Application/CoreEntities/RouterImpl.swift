@@ -51,7 +51,7 @@ final class RouterImpl: Router {
     func push(_ module: Presentable, animated: Bool) {
         let controller = module.toPresent
         guard !(controller.isNavigationController) else {
-            fatalError("")
+            fatalError("The module must be of type UIViewController, not UINavigationController")
         }
         rootController.pushViewController(controller, animated: animated)
     }

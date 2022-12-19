@@ -6,13 +6,202 @@
 //
 
 import UIKit
+import Combine
 
-class ForecastViewController: BaseViewController {
+class ForecastViewController: BaseViewController, ViewModelable {
+    
+    typealias ViewModel = ForecastViewModel
+    
+    //MARK: Properties
+    
+    var viewModel: ViewModel! {
+        didSet {
+            configureWeatherSegments()
+            setBindings()
+            viewModel.updateLocation()
+        }
+    }
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    //MARK: - Views
+    
+    private lazy var loadingIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.hidesWhenStopped = true
+        return activityIndicator
+    }()
+    
+    private lazy var currentWeatherView = CurrentWeatherView()
+    
+    private lazy var weatherInfoSegmentedControl: UISegmentedControl = {
+        let segmentedControl = UISegmentedControl()
+        segmentedControl.selectedSegmentTintColor = .systemBlue
+        
+        segmentedControl.setTitleTextAttributes([
+            .foregroundColor: UIColor.systemBlue,
+            .font: Resources.Fonts.system(size: 17)
+        ], for: .normal)
+        
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
+        
+        segmentedControl.addTarget(self, action: #selector(weatherSegmentDidChange), for: .valueChanged)
+        return segmentedControl
+    }()
+    
+    private lazy var temperaturesView = WeatherTemperatureView(frame: CGRect(
+        origin: weatherTableView.frame.origin,
+        size: CGSize(
+            width: weatherTableView.bounds.width,
+            height: 120
+        ))
+    )
+    
+    private lazy var weatherTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = Resources.Colors.background
+        tableView.showsVerticalScrollIndicator = false
+        tableView.register(WeatherDetailsTableViewCell.self, forCellReuseIdentifier: WeatherDetailsTableViewCell.identifier)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        return tableView
+    }()
+    
+    private lazy var weatherDetailsVStack = UIStackView(
+        axis: .vertical,
+        spacing: 20,
+        arrangedSubviews: [
+            weatherInfoSegmentedControl.padded(insets: .init(top: 0, left: 20, bottom: 0, right: 20)),
+            weatherTableView
+        ]
+    )
 
-    //MARK: - View Controller Lyfecycle
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    private lazy var mainVStack = UIStackView(
+        axis: .vertical,
+        spacing: 40,
+        arrangedSubviews: [
+            currentWeatherView.padded(insets: .init(top: 0, left: 20, bottom: 0, right: 20)),
+            weatherDetailsVStack
+        ]
+    )
+    
+    //MARK: - Methods
+    
+    override func configureAppearance() {
+        title = Resources.Strings.appName
+        navigationController?.navigationBar.prefersLargeTitles = true
+        view.backgroundColor = .secondarySystemBackground
+    }
+    
+    override func setupViews() {
+        view.addSubview(loadingIndicator, useAutoLayout: true)
+        view.addSubview(mainVStack, useAutoLayout: true)
+        setupTableView()
+    }
+    
+    override func constraintViews() {
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            
+            mainVStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            mainVStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            mainVStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            mainVStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        ])
     }
 }
 
+//MARK: - Actions
+
+@objc private extension ForecastViewController {
+    func weatherSegmentDidChange() {
+        let seletedIndex = weatherInfoSegmentedControl.selectedSegmentIndex
+        viewModel.segmentSelectionSubject.send(seletedIndex)
+    }
+}
+
+//MARK: - Private methods
+
+private extension ForecastViewController {
+    func setBindings() {
+        viewModel.weatherInfoSelectionPublisher
+            .sink { [weak self] segment in
+                self?.weatherTableView.reloadData()
+                self?.setupTableViewHeader(for: segment)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.weatherRecievedPublisher
+            .sink { [weak self] isRecieved in
+                self?.currentWeatherView.viewModel = self?.viewModel.viewModelForCurrentWeather()
+                self?.updateInterface(isRecievedWeather: isRecieved)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.errorPublisher
+            .sink { error in
+                print(error.localizedDescription)
+            }
+            .store(in: &cancellables)
+    }
+    
+    func setupTableView() {
+        weatherTableView.dataSource = self
+        weatherTableView.delegate = self
+    }
+    
+    func configureWeatherSegments() {
+        viewModel.segmentsTitles.enumerated().forEach { index, segmentTitle in
+            weatherInfoSegmentedControl.insertSegment(withTitle: segmentTitle, at: index, animated: false)
+        }
+        
+        weatherInfoSegmentedControl.selectedSegmentIndex = viewModel.segmentSelectionSubject.value
+    }
+    
+    func updateInterface(isRecievedWeather: Bool) {
+        if isRecievedWeather {
+            loadingIndicator.stopAnimating()
+            weatherSegmentDidChange()
+        } else {
+            loadingIndicator.startAnimating()
+        }
+        
+        mainVStack.isHidden = !isRecievedWeather
+    }
+    
+    func setupTableViewHeader(for segment: WeatherInfoSegment) {
+        if segment == .details {
+            temperaturesView.viewModel = viewModel.viewModelForCurrentTemperatureHeader()
+            weatherTableView.tableHeaderView = temperaturesView
+        } else {
+            weatherTableView.tableHeaderView = nil
+        }
+    }
+}
+
+//MARK: - UITableViewDataSource & UITableViewDelegate
+
+extension ForecastViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.numberOfRows
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        switch viewModel.selectedWeatherSegment {
+        case .details:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: WeatherDetailsTableViewCell.identifier, for: indexPath) as? WeatherDetailsTableViewCell else {
+                fatalError("Cannot get a cell with the specified type")
+            }
+            cell.viewModel = viewModel.viewModelForWeatherDetailsCell(at: indexPath)
+            return cell
+        @unknown default:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+            return cell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+}
