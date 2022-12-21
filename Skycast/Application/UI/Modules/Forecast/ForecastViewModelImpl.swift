@@ -13,6 +13,10 @@ final class ForecastViewModelImpl: ForecastViewModel {
 
     //MARK: Properties
     
+    @Published private var currentWeatherSegment: WeatherInfoSegment = .details
+    @Published private var isRecievedWeather = false
+    @Published private var isLoading = true
+    
     var numberOfRows: Int {
         guard weather != nil else { return 0 }
         
@@ -43,28 +47,28 @@ final class ForecastViewModelImpl: ForecastViewModel {
     
     var weatherRecievedPublisher: AnyPublisher<Bool, Never> {
         $isRecievedWeather.eraseToAnyPublisher()
+            
+    }
+    
+    var loadingPublisher: AnyPublisher<Bool, Never> {
+        $isLoading.eraseToAnyPublisher()
     }
     
     var errorPublisher: AnyPublisher<Error, Never> {
-        errorSubject
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
+        errorSubject.eraseToAnyPublisher()
     }
     
-    @Published private var currentWeatherSegment: WeatherInfoSegment = .details
-    @Published private var isRecievedWeather = false
-    
     private let weatherInfoChangingSubject: PassthroughSubject<WeatherInfoSegment, Never> = PassthroughSubject()
-    private let errorSubject: PassthroughSubject<Error?, Never> = PassthroughSubject()
+    
+    private let errorSubject: PassthroughSubject<Error, Never> = PassthroughSubject()
     
     private var cancellables = Set<AnyCancellable>()
     
-    private var weather: Weather?
-    
+    private let weatherDeatils = WeatherDetails.allCases
     private let locationManager: UserLocationManager
     private let weatherService: WeatherAPIService
+    private var weather: Weather?
     
-    private let weatherDeatils = WeatherDetails.allCases
     
     //MARK: - Initialization
     
@@ -77,7 +81,34 @@ final class ForecastViewModelImpl: ForecastViewModel {
     //MARK: - Methods
     
     func updateLocation() {
+        isLoading = true
         locationManager.updateLocation()
+    }
+    
+    func requestWeather(for location: CLLocation) {
+        weatherService.getWeather(route: .forecast, for: location)
+            .mapError { error in
+                switch error {
+                case .decodingError:
+                    fatalError("This data cannot be converted to a given data model")
+                default:
+                    return error
+                }
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    self?.isLoading = false
+                    self?.weather = nil
+                    self?.isRecievedWeather = false
+                    self?.errorSubject.send(error)
+                }
+            } receiveValue: { [weak self] weather in
+                self?.weather = weather
+                self?.isLoading = false
+                self?.isRecievedWeather = true
+            }
+            .store(in: &cancellables)
     }
     
     func viewModelForCurrentWeather() -> CurrentWeatherViewModel {
@@ -107,24 +138,17 @@ final class ForecastViewModelImpl: ForecastViewModel {
             .store(in: &cancellables)
         
         locationManager.locationPublisher
-            .compactMap { $0 }
-            .flatMap { [weak self] location in
-                guard let self else { fatalError("Invalid error: Self does not exist") }
-                return self.weatherService.getWeather(route: .forecast, for: location)
-            }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                if case .failure(let error) = completion {
-                    self?.errorSubject.send(error)
-                }
-                self?.isRecievedWeather = false
-            } receiveValue: { [weak self] weather in
-                self?.weather = weather
-                self?.isRecievedWeather = true
-                self?.errorSubject.send(nil)
+            .sink { [weak self] location in
+                self?.requestWeather(for: location)
             }
             .store(in: &cancellables)
-
+        
+        locationManager.errorSubject
+            .sink { [weak self] error in
+                self?.isLoading = false
+                self?.errorSubject.send(error)
+            }
+            .store(in: &cancellables)
     }
     
     

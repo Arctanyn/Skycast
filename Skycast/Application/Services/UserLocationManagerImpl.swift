@@ -11,29 +11,31 @@ import CoreLocation
 
 final class UserLocationManagerImpl: NSObject, UserLocationManager {
     
-    var locationPublisher: AnyPublisher<CLLocation?, Never> {
-        $lastLocations
-            .map { $0.first }
+    //MARK: Properties
+    
+    @Published private var currentLocation: CLLocation?
+    
+    var locationPublisher: AnyPublisher<CLLocation, Never> {
+        $currentLocation
+            .compactMap { $0 }
             .eraseToAnyPublisher()
     }
     
-    var errorSubject: PassthroughSubject<Error?, Never> = PassthroughSubject()
+    var errorSubject: PassthroughSubject<LocationError, Never> = PassthroughSubject()
+
+    private var locationManager = CLLocationManager()
     
-    @Published private var lastLocations: [CLLocation] = []
-    
-    private var manager = CLLocationManager()
+    //MARK: - Initialization
     
     override init() {
         super.init()
         setupLocationManager()
     }
     
-    func updateLocation() {
-        manager.startUpdatingLocation()
-    }
+    //MARK: - Methods
     
-    func stopUpdating() {
-        manager.stopUpdatingLocation()
+    func updateLocation() {
+        locationManager.requestLocation()
     }
 }
 
@@ -41,8 +43,8 @@ final class UserLocationManagerImpl: NSObject, UserLocationManager {
 
 private extension UserLocationManagerImpl {
     func setupLocationManager() {
-        manager.delegate = self
-        manager.requestWhenInUseAuthorization()
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
     }
 }
 
@@ -50,12 +52,10 @@ private extension UserLocationManagerImpl {
 
 extension UserLocationManagerImpl: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        lastLocations = locations
-        stopUpdating()
+        currentLocation = locations.first
     }
     
-    func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
-        errorSubject.send(error)
-        stopUpdating()
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        errorSubject.send(LocationError.failedToGetLocation)
     }
 }

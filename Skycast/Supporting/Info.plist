@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>Weather API Key</key>
-	<string>$(WEATHER_API_KEY)</string>
+	<string>ad47edc08f7f452b8b3115130222204</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow geolocation access to get weather data based on your current location</string>
+	<string>Allow access to your location to get up-to-date weather information</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

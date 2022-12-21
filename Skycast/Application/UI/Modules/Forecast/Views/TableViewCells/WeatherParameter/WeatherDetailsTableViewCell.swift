@@ -17,7 +17,7 @@ final class WeatherDetailsTableViewCell: BaseTableViewCell, ViewModelable {
     var viewModel: ViewModel! {
         didSet {
             iconImageView.image = viewModel.type.icon
-            titleLabel.text = viewModel.title
+            titleLabel.text = "\(viewModel.title)"
             
             viewModel.valuePublisher
                 .sink { [weak self] value in
@@ -61,7 +61,6 @@ final class WeatherDetailsTableViewCell: BaseTableViewCell, ViewModelable {
         NSLayoutConstraint.activate([
             iconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             iconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            iconImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             iconImageView.widthAnchor.constraint(equalToConstant: 30),
             iconImageView.heightAnchor.constraint(equalTo: iconImageView.widthAnchor),
             
@@ -72,6 +71,12 @@ final class WeatherDetailsTableViewCell: BaseTableViewCell, ViewModelable {
             valueLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             valueLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
+        
+        let iconBottomConstraint = iconImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
+        iconBottomConstraint.priority = .defaultLow
+        iconBottomConstraint.isActive = true
+        
+        
     }
 
     

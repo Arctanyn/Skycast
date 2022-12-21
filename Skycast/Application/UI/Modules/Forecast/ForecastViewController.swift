@@ -26,6 +26,17 @@ class ForecastViewController: BaseViewController, ViewModelable {
     
     //MARK: - Views
     
+    private lazy var messageView: MessageViewWIthAction = {
+        let msgView = MessageViewWIthAction()
+        msgView.setupMessage(
+            withTitle: "Weather is unavailable",
+            messageDescription: "Could not get weather information. Check your internet connection and try again",
+            actionButtonText: "Tap to retry"
+        )
+        msgView.addTargetToButton(self, action: #selector(messageViewActionButtonTapped), forEvent: .touchUpInside)
+        return msgView
+    }()
+    
     private lazy var loadingIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView(style: .large)
         activityIndicator.hidesWhenStopped = true
@@ -93,6 +104,9 @@ class ForecastViewController: BaseViewController, ViewModelable {
     }
     
     override func setupViews() {
+        view.addSubview(messageView, useAutoLayout: true)
+        messageView.isHidden = true
+        
         view.addSubview(loadingIndicator, useAutoLayout: true)
         view.addSubview(mainVStack, useAutoLayout: true)
         setupTableView()
@@ -100,6 +114,10 @@ class ForecastViewController: BaseViewController, ViewModelable {
     
     override func constraintViews() {
         NSLayoutConstraint.activate([
+            messageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            messageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            messageView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.9),
+            
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
@@ -118,6 +136,11 @@ class ForecastViewController: BaseViewController, ViewModelable {
         let seletedIndex = weatherInfoSegmentedControl.selectedSegmentIndex
         viewModel.segmentSelectionSubject.send(seletedIndex)
     }
+    
+    func messageViewActionButtonTapped() {
+        messageView.isHidden = true
+        viewModel.updateLocation()
+    }
 }
 
 //MARK: - Private methods
@@ -133,14 +156,26 @@ private extension ForecastViewController {
         
         viewModel.weatherRecievedPublisher
             .sink { [weak self] isRecieved in
-                self?.currentWeatherView.viewModel = self?.viewModel.viewModelForCurrentWeather()
                 self?.updateInterface(isRecievedWeather: isRecieved)
             }
             .store(in: &cancellables)
         
+        viewModel.loadingPublisher
+            .sink { [weak self] isLoading in
+                isLoading ? self?.loadingIndicator.startAnimating() : self?.loadingIndicator.stopAnimating()
+            }
+            .store(in: &cancellables)
+        
         viewModel.errorPublisher
-            .sink { error in
-                print(error.localizedDescription)
+            .sink { [weak self] error in
+                self?.showAlert(withTitle: error.localizedDescription, message: "Try again now or later", actions: [
+                    UIAlertAction(title: "Try again", style: .default, handler: { _ in
+                        self?.viewModel.updateLocation()
+                    }),
+                    UIAlertAction(title: "OK", style: .cancel, handler: { _ in
+                        self?.messageView.isHidden = false
+                    })
+                ])
             }
             .store(in: &cancellables)
     }
@@ -160,13 +195,11 @@ private extension ForecastViewController {
     
     func updateInterface(isRecievedWeather: Bool) {
         if isRecievedWeather {
-            loadingIndicator.stopAnimating()
             weatherSegmentDidChange()
-        } else {
-            loadingIndicator.startAnimating()
         }
-        
+        currentWeatherView.viewModel = viewModel.viewModelForCurrentWeather()
         mainVStack.isHidden = !isRecievedWeather
+        
     }
     
     func setupTableViewHeader(for segment: WeatherInfoSegment) {

@@ -40,7 +40,7 @@ enum Resources {
     //MARK: - Fonts
     
     enum Fonts {
-        static func system(size: CGFloat, weight: UIFont.Weight = .regular) -> UIFont {
+        static func system(size: CGFloat = 17, weight: UIFont.Weight = .regular) -> UIFont {
             .systemFont(ofSize: size, weight: weight)
         }
     }

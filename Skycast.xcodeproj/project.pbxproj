@@ -29,6 +29,8 @@
 		945DE8B6295119C800D0F106 /* WeatherTemperatureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945DE8B5295119C800D0F106 /* WeatherTemperatureViewModel.swift */; };
 		945DE8B829511C8F00D0F106 /* Publisher + Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945DE8B729511C8F00D0F106 /* Publisher + Ext.swift */; };
 		945DE8BA29511FFC00D0F106 /* TemperatureUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945DE8B929511FFC00D0F106 /* TemperatureUnit.swift */; };
+		9469DC6929532E9E00B73F10 /* LocationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9469DC6829532E9E00B73F10 /* LocationError.swift */; };
+		9469DC6B2953326500B73F10 /* MessageViewWIthAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9469DC6A2953326500B73F10 /* MessageViewWIthAction.swift */; };
 		947B35DE294FB00D001DF032 /* AccessKeysHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B35DD294FB00D001DF032 /* AccessKeysHelper.swift */; };
 		94F30525294CE79B00033495 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F30524294CE79B00033495 /* AppDelegate.swift */; };
 		94F30527294CE79B00033495 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94F30526294CE79B00033495 /* SceneDelegate.swift */; };
@@ -92,7 +94,8 @@
 		945DE8B5295119C800D0F106 /* WeatherTemperatureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherTemperatureViewModel.swift; sourceTree = "<group>"; };
 		945DE8B729511C8F00D0F106 /* Publisher + Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher + Ext.swift"; sourceTree = "<group>"; };
 		945DE8B929511FFC00D0F106 /* TemperatureUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureUnit.swift; sourceTree = "<group>"; };
-		947B35D8294FADC6001DF032 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+		9469DC6829532E9E00B73F10 /* LocationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationError.swift; sourceTree = "<group>"; };
+		9469DC6A2953326500B73F10 /* MessageViewWIthAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewWIthAction.swift; sourceTree = "<group>"; };
 		947B35DD294FB00D001DF032 /* AccessKeysHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessKeysHelper.swift; sourceTree = "<group>"; };
 		94F30521294CE79B00033495 /* Skycast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Skycast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94F30524294CE79B00033495 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -161,6 +164,7 @@
 			children = (
 				942229D3294DDC3E0004FE52 /* BaseView.swift */,
 				945DE8B129510D9E00D0F106 /* BaseTableViewCell.swift */,
+				9469DC6A2953326500B73F10 /* MessageViewWIthAction.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -211,9 +215,9 @@
 		942229EA294E16860004FE52 /* Enums */ = {
 			isa = PBXGroup;
 			children = (
+				945DE8AE2950FFAA00D0F106 /* Networking */,
 				942229EB294E16950004FE52 /* WeatherInfoSegment.swift */,
 				945DE8AC2950FF9200D0F106 /* WeatherDetails.swift */,
-				945DE8AE2950FFAA00D0F106 /* Networking */,
 				945DE8B929511FFC00D0F106 /* TemperatureUnit.swift */,
 			);
 			path = Enums;
@@ -222,19 +226,12 @@
 		945DE8AE2950FFAA00D0F106 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
+				9469DC6829532E9E00B73F10 /* LocationError.swift */,
 				94F46533294E6B3E0019A1A9 /* WeatherHTTPBase.swift */,
 				94F4652A294E65ED0019A1A9 /* WeatherAPIRoute.swift */,
 				94F46531294E6A1E0019A1A9 /* HTTPError.swift */,
 			);
 			path = Networking;
-			sourceTree = "<group>";
-		};
-		947B35D5294FA6FE001DF032 /* Configurations */ = {
-			isa = PBXGroup;
-			children = (
-				947B35D8294FADC6001DF032 /* Secrets.xcconfig */,
-			);
-			path = Configurations;
 			sourceTree = "<group>";
 		};
 		947B35D9294FAF08001DF032 /* WeatherTemperatureView */ = {
@@ -292,7 +289,6 @@
 		94F30539294CE7E500033495 /* Application */ = {
 			isa = PBXGroup;
 			children = (
-				947B35D5294FA6FE001DF032 /* Configurations */,
 				94F30538294CE7B100033495 /* AppFiles */,
 				94F3053B294CE8B700033495 /* CoreEntities */,
 				94F46530294E699B0019A1A9 /* Models */,
@@ -545,6 +541,7 @@
 				94F30547294CEA9E00033495 /* CoordinatorsFactory.swift in Sources */,
 				942229DC294DE1160004FE52 /* UIStackView + Ext.swift in Sources */,
 				94F3053D294CE8C100033495 /* DI.swift in Sources */,
+				9469DC6929532E9E00B73F10 /* LocationError.swift in Sources */,
 				945DE8B229510D9E00D0F106 /* BaseTableViewCell.swift in Sources */,
 				94F46544294E7DDB0019A1A9 /* Day.swift in Sources */,
 				94F30555294CF05500033495 /* RouterImpl.swift in Sources */,
@@ -572,6 +569,7 @@
 				9413F5E7294F52B900D011F3 /* WeatherTemperatureView.swift in Sources */,
 				94F3054C294CEC1100033495 /* Router.swift in Sources */,
 				942229EE294E34210004FE52 /* WeatherAPIService.swift in Sources */,
+				9469DC6B2953326500B73F10 /* MessageViewWIthAction.swift in Sources */,
 				945DE8B42951199000D0F106 /* WeatherTemperatureViewModelImpl.swift in Sources */,
 				94F4654D294E99380019A1A9 /* UITableViewCell + Ext.swift in Sources */,
 				94F30525294CE79B00033495 /* AppDelegate.swift in Sources */,
@@ -666,7 +664,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -720,7 +718,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -732,7 +730,6 @@
 		};
 		94F30536294CE79B00033495 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 947B35D8294FADC6001DF032 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -745,7 +742,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -764,7 +761,6 @@
 		};
 		94F30537294CE79B00033495 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 947B35D8294FADC6001DF032 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -777,7 +773,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

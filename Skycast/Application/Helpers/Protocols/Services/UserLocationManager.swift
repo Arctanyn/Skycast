@@ -10,7 +10,7 @@ import Combine
 import CoreLocation
 
 protocol UserLocationManager {
-    var locationPublisher: AnyPublisher<CLLocation?, Never> { get }
-    var errorSubject: PassthroughSubject<Error?, Never> { get }
+    var locationPublisher: AnyPublisher<CLLocation, Never> { get }
+    var errorSubject: PassthroughSubject<LocationError, Never> { get }
     func updateLocation()
 }

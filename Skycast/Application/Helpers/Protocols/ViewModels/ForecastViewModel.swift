@@ -16,6 +16,7 @@ protocol ForecastViewModel {
     var segmentSelectionSubject: CurrentValueSubject<Int, Never> { get }
     var weatherInfoSelectionPublisher: AnyPublisher<WeatherInfoSegment, Never> { get }
     var weatherRecievedPublisher: AnyPublisher<Bool, Never> { get }
+    var loadingPublisher: AnyPublisher<Bool, Never> { get }
     var errorPublisher: AnyPublisher<Error, Never> { get }
     
     func updateLocation()
