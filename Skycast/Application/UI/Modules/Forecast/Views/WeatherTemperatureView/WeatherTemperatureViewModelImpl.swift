@@ -12,6 +12,8 @@ final class WeatherTemperatureViewModelImpl: WeatherTemperatureViewModel {
     
     //MARK: Properties
     
+    @Published private var day: Day?
+    
     var minTemperaturePublisher: AnyPublisher<Int, Never> {
         $day
             .compactMap { $0?.mintempC }
@@ -25,8 +27,6 @@ final class WeatherTemperatureViewModelImpl: WeatherTemperatureViewModel {
             .map { $0.toRoundedInt }
             .eraseToAnyPublisher()
     }
-    
-    @Published private var day: Day?
     
     //MARK: - Initialization
     

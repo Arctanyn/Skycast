@@ -24,6 +24,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         appCoordinator?.start()
         
         self.window = window
+        window.overrideUserInterfaceStyle = .dark
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

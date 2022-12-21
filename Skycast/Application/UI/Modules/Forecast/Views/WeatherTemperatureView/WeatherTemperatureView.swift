@@ -16,16 +16,9 @@ final class WeatherTemperatureView: BaseView, ViewModelable {
     
     var viewModel: ViewModel! {
         didSet {
-            viewModel.minTemperaturePublisher
-                .mapToTemperature(in: .celsius)
-                .assignToTextOnLabel(minTempLabel)
-                .store(in: &cancellables)
+            setupTemperatureView(minTemperatureView, withPublisher: viewModel.minTemperaturePublisher)
             
-            viewModel.maxTemperaturePublisher
-                .mapToTemperature(in: .celsius)
-                .assignToTextOnLabel(maxTempLabel)
-                .store(in: &cancellables)
-            
+            setupTemperatureView(maxTemperatureView, withPublisher: viewModel.maxTemperaturePublisher)
         }
     }
     
@@ -33,62 +26,24 @@ final class WeatherTemperatureView: BaseView, ViewModelable {
     
     //MARK: - Views
     
-    private lazy var mainHStack: UIStackView = {
-        let stack = UIStackView(axis: .horizontal, spacing: 40, distribution: .fillEqually)
-        stack.addArrangedSubviews([
-            minTempStackView,
-            maxTempStackView
-        ])
-        return stack
+    private lazy var mainHStack: UIStackView = UIStackView(
+        axis: .horizontal,
+        spacing: 60,
+        arrangedSubviews: [minTemperatureView, maxTemperatureView]
+    )
+    
+    private lazy var minTemperatureView: TemperatureView = {
+        let temperatureView = TemperatureView(title: "LOW")
+        temperatureView.alpha = 0.6
+        return temperatureView
     }()
     
-    private lazy var minTempStackView: UIStackView = {
-        let stack = UIStackView(axis: .vertical, spacing: 5, distribution: .fillProportionally, alignment: .center)
-        stack.addArrangedSubviews([
-            minTempLabel,
-            lowLabel
-        ])
-        return stack
-    }()
-    
-    private lazy var maxTempStackView: UIStackView = {
-        let stack = UIStackView(axis: .vertical, spacing: 5, distribution: .fillProportionally, alignment: .center)
-        stack.addArrangedSubviews([
-            maxTempLabel,
-            highLabel
-        ])
-        return stack
-    }()
-    
-    private lazy var lowLabel = UILabel(
-        text: "LOW",
-        textColor: .tertiaryLabel,
-        font: Resources.Fonts.system(size: 18, weight: .semibold)
-    )
-    
-    private lazy var highLabel = UILabel(
-        text: "HIGH",
-        textColor: Resources.Colors.darkText,
-        font: Resources.Fonts.system(size: 18, weight: .semibold)
-    )
-    
-    private lazy var minTempLabel = UILabel(
-        text: "5ºC",
-        textColor: Resources.Colors.blue.withAlphaComponent(0.6),
-        font: Resources.Fonts.system(size: 35, weight: .bold)
-    )
-    
-    private lazy var maxTempLabel = UILabel(
-        text: "20ºC",
-        textColor: Resources.Colors.blue,
-        font: Resources.Fonts.system(size: 35, weight: .bold)
-    )
+    private lazy var maxTemperatureView = TemperatureView(title: "HIGH")
     
     //MARK: - Methods
     
     override func configureAppearance() {
         backgroundColor = .clear
-        
     }
     
     override func setupViews() {
@@ -102,5 +57,17 @@ final class WeatherTemperatureView: BaseView, ViewModelable {
             mainHStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20),
         ])
     }
+}
 
+//MARK: - Private methods
+
+private extension WeatherTemperatureView {
+    func setupTemperatureView<P: Publisher>(_ view: TemperatureView, withPublisher publisher: P) where P.Output == Int, P.Failure == Never {
+        publisher
+            .mapToTemperature(in: .celsius)
+            .sink { temperature in
+                view.setupViews(withTemperature: temperature)
+            }
+            .store(in: &cancellables)
+    }
 }

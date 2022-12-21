@@ -14,8 +14,8 @@ extension Publisher {
             .assign(to: \.text, on: label)
     }
     
-    func mapToTemperature(in units: TemperatureUnit) -> AnyPublisher<String, Never> where Output == Int, Failure == Never {
-        map { String($0) + units.rawValue }
+    func mapToTemperature(in units: TemperatureUnits) -> AnyPublisher<Temperature, Never> where Output == Int, Failure == Never {
+        map { Temperature(degrees: $0, units: units) }
             .eraseToAnyPublisher()
     }
 }

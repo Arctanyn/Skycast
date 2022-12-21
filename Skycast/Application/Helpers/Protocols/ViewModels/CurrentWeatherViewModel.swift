@@ -9,6 +9,7 @@ import Foundation
 import Combine
 
 protocol CurrentWeatherViewModel {
+    var iconUpdatePublisher: AnyPublisher<(dayTime: DayTime, code: Int), Never> { get }
     var temperaturePublisher: AnyPublisher<Int, Never> { get }
     var conditionPublisher: AnyPublisher<String, Never> { get }
     var locationPublisher: AnyPublisher<String, Never> { get }

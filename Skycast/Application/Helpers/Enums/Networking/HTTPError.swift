@@ -34,9 +34,9 @@ enum HTTPError: LocalizedError {
         case .serverError(let statusCode):
             return "Server error, status code: \(statusCode)"
         case .networkError(let error):
-            return "Network error: \(error.localizedDescription)"
+            return "\(error.localizedDescription)"
         case .decodingError(let decodingError):
-            return "Decoding error: \(decodingError.localizedDescription)"
+            return "\(decodingError.localizedDescription)"
         }
     }
 }

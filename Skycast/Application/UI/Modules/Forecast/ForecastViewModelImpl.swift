@@ -90,7 +90,7 @@ final class ForecastViewModelImpl: ForecastViewModel {
             .mapError { error in
                 switch error {
                 case .decodingError:
-                    fatalError("This data cannot be converted to a given data model")
+                    fatalError("Decoding error: \(error.localizedDescription)")
                 default:
                     return error
                 }

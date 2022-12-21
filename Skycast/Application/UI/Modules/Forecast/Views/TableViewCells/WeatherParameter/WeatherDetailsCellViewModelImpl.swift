@@ -12,6 +12,8 @@ final class WeatherDetailsCellViewModelImpl: WeatherDetailsCellViewModel {
     
     //MARK: Properties
     
+    @Published private var weather: CurrentWeather?
+    
     var type: WeatherDetails {
         return detailsType
     }
@@ -55,7 +57,6 @@ final class WeatherDetailsCellViewModelImpl: WeatherDetailsCellViewModel {
             .eraseToAnyPublisher()
     }
     
-    @Published private var weather: CurrentWeather?
     private let detailsType: WeatherDetails
     
     //MARK: - Initialization

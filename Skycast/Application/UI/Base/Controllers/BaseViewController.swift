@@ -23,7 +23,7 @@ class BaseViewController: UIViewController {
 
 @objc extension BaseViewController: BaseViewSetup {
     func configureAppearance() {
-        view.backgroundColor = Resources.Colors.background
+        view.backgroundColor = Resources.Colors.secondaryBackground
     }
     
     func setupViews() { }

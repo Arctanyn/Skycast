@@ -12,6 +12,15 @@ final class CurrentWeatherViewModelImpl: CurrentWeatherViewModel {
     
     //MARK: Properties
     
+    @Published private var weather: CurrentWeather?
+    @Published private var location: Location?
+    
+    var iconUpdatePublisher: AnyPublisher<(dayTime: DayTime, code: Int), Never> {
+        dayTimePublisher.combineLatest(codePublisher)
+            .map { (dayTime: $0, code: $1) }
+            .eraseToAnyPublisher()
+    }
+    
     var temperaturePublisher: AnyPublisher<Int, Never> {
         $weather
             .compactMap { $0?.tempC?.rounded() }
@@ -34,8 +43,18 @@ final class CurrentWeatherViewModelImpl: CurrentWeatherViewModel {
             .eraseToAnyPublisher()
     }
     
-    @Published private var weather: CurrentWeather?
-    @Published private var location: Location?
+    private var dayTimePublisher: AnyPublisher<DayTime, Never> {
+        $weather
+            .compactMap { $0?.isDay }
+            .compactMap { DayTime(rawValue: $0) }
+            .eraseToAnyPublisher()
+    }
+    
+    private var codePublisher: AnyPublisher<Int, Never> {
+        $weather
+            .compactMap { $0?.condition?.code }
+            .eraseToAnyPublisher()
+    }
     
     //MARK: - Methods
     

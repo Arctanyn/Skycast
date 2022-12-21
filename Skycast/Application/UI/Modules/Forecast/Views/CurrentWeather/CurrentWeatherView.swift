@@ -16,8 +16,15 @@ final class CurrentWeatherView: BaseView, ViewModelable {
     
     var viewModel: ViewModel! {
         didSet {
+            viewModel.iconUpdatePublisher
+                .sink { [weak self] dayTime, code in
+                    self?.iconManager.setIcon(code: code, dayTime: dayTime)
+                }
+                .store(in: &cancellables)
+            
             viewModel.temperaturePublisher
                 .mapToTemperature(in: .celsius)
+                .map { $0.stringFormat }
                 .assignToTextOnLabel(temperatureLabel)
                 .store(in: &cancellables)
             
@@ -28,15 +35,51 @@ final class CurrentWeatherView: BaseView, ViewModelable {
             viewModel.locationPublisher
                 .assignToTextOnLabel(locationLabel)
                 .store(in: &cancellables)
+            
         }
     }
     
+    private let iconManager = WeatherIconManager()
     private var cancellables = Set<AnyCancellable>()
     
     //MARK: - Views
     
-    private lazy var labelsVStack = UIStackView(axis: .vertical, spacing: 0)
-    private lazy var mainHStack = UIStackView(axis: .horizontal, spacing: 10)
+    private lazy var mainVStack = UIStackView(
+        axis: .vertical,
+        spacing: 20,
+        arrangedSubviews: [
+            weatherHStack,
+            locationHStack
+        ]
+    )
+    
+    private lazy var weatherHStack = UIStackView(
+        axis: .horizontal,
+        spacing: 20,
+        arrangedSubviews: [
+            labelsVStack,
+            weatherIconView
+        ]
+    )
+    
+    private lazy var labelsVStack = UIStackView(
+        axis: .vertical,
+        spacing: 5,
+        arrangedSubviews: [
+            temperatureLabel,
+            conditionLabel
+        ]
+    )
+    
+    private lazy var locationHStack =  UIStackView(
+        axis: .horizontal,
+        spacing: 10,
+        alignment: .center,
+        arrangedSubviews: [
+            locationImageView,
+            locationLabel
+        ]
+    )
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -68,9 +111,16 @@ final class CurrentWeatherView: BaseView, ViewModelable {
         return label
     }()
     
-    lazy var weatherIconView: UIImageView = {
+    private lazy var weatherIconView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private lazy var locationImageView: UIImageView = {
+        let imageView = UIImageView(image: Resources.Images.location)
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = .secondaryLabel
         return imageView
     }()
     
@@ -84,14 +134,16 @@ final class CurrentWeatherView: BaseView, ViewModelable {
     //MARK: - Methods
     
     override func configureAppearance() {
-        backgroundColor = Resources.Colors.background
+        backgroundColor = Resources.Colors.secondaryBackground
+        
+        iconManager.$icon
+            .assign(to: \.image, on: weatherIconView)
+            .store(in: &cancellables)
     }
     
     override func setupViews() {
         addSubview(titleLabel, useAutoLayout: true)
-        addSubview(locationLabel, useAutoLayout: true)
-        setupLabelsVStack()
-        setupMainHStack()
+        addSubview(mainVStack, useAutoLayout: true)
     }
     
     override func constraintViews() {
@@ -101,15 +153,14 @@ final class CurrentWeatherView: BaseView, ViewModelable {
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             
             weatherIconView.widthAnchor.constraint(equalToConstant: 80),
-                                    
-            mainHStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-            mainHStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            mainHStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
             
-            locationLabel.topAnchor.constraint(equalTo: mainHStack.bottomAnchor, constant: 20),
-            locationLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            locationLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            locationLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
+            locationImageView.widthAnchor.constraint(equalToConstant: 20),
+            locationImageView.heightAnchor.constraint(equalTo: locationImageView.widthAnchor),
+                                    
+            mainVStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            mainVStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            mainVStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -40),
+            mainVStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
         ])
     }
 }
@@ -117,25 +168,10 @@ final class CurrentWeatherView: BaseView, ViewModelable {
 //MARK: - Private methods
 
 private extension CurrentWeatherView {
-    func setupLabelsVStack() {
-        addSubview(labelsVStack, useAutoLayout: true)
-        labelsVStack.addArrangedSubviews([
-            temperatureLabel,
-            conditionLabel
-        ])
-    }
-    
-    func setupMainHStack() {
-        addSubview(mainHStack, useAutoLayout: true)
-        mainHStack.addArrangedSubviews([
-            labelsVStack,
-            weatherIconView
-        ])
-    }
-    
     func addShadow() {
         layer.shadowOpacity = 0.25
         layer.shadowRadius = 10
         layer.shadowOffset = CGSize(width: 0, height: 7)
     }
 }
+

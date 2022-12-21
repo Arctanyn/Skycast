@@ -51,10 +51,13 @@ class ForecastViewController: BaseViewController, ViewModelable {
         
         segmentedControl.setTitleTextAttributes([
             .foregroundColor: UIColor.systemBlue,
-            .font: Resources.Fonts.system(size: 17)
+            .font: Resources.Fonts.system()
         ], for: .normal)
         
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
+        segmentedControl.setTitleTextAttributes([
+            .foregroundColor: Resources.Colors.background,
+            .font: Resources.Fonts.system(weight: .medium)
+        ], for: .selected)
         
         segmentedControl.addTarget(self, action: #selector(weatherSegmentDidChange), for: .valueChanged)
         return segmentedControl
@@ -70,7 +73,8 @@ class ForecastViewController: BaseViewController, ViewModelable {
     
     private lazy var weatherTableView: UITableView = {
         let tableView = UITableView()
-        tableView.backgroundColor = Resources.Colors.background
+        tableView.backgroundColor = Resources.Colors.secondaryBackground
+        tableView.allowsSelection = false
         tableView.showsVerticalScrollIndicator = false
         tableView.register(WeatherDetailsTableViewCell.self, forCellReuseIdentifier: WeatherDetailsTableViewCell.identifier)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -81,7 +85,8 @@ class ForecastViewController: BaseViewController, ViewModelable {
         axis: .vertical,
         spacing: 20,
         arrangedSubviews: [
-            weatherInfoSegmentedControl.padded(insets: .init(top: 0, left: 20, bottom: 0, right: 20)),
+            weatherInfoSegmentedControl
+                .padded(insets: .init(top: 0, left: 20, bottom: 0, right: 20)),
             weatherTableView
         ]
     )
@@ -90,7 +95,8 @@ class ForecastViewController: BaseViewController, ViewModelable {
         axis: .vertical,
         spacing: 40,
         arrangedSubviews: [
-            currentWeatherView.padded(insets: .init(top: 0, left: 20, bottom: 0, right: 20)),
+            currentWeatherView
+                .padded(insets: .init(top: 0, left: 20, bottom: 0, right: 20)),
             weatherDetailsVStack
         ]
     )
@@ -100,7 +106,7 @@ class ForecastViewController: BaseViewController, ViewModelable {
     override func configureAppearance() {
         title = Resources.Strings.appName
         navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .secondarySystemBackground
+        view.backgroundColor = Resources.Colors.background
     }
     
     override func setupViews() {
@@ -231,10 +237,6 @@ extension ForecastViewController: UITableViewDataSource, UITableViewDelegate {
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             return cell
         }
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
     }
     
 }
