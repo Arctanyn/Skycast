@@ -11,4 +11,5 @@ enum DateFormat: String {
     case dailyWeatherForecast = "yyyy-MM-dd"
     case hourlyWeatherForecast = "yyyy-MM-dd HH:mm"
     case weekday = "EEEE"
+    case hour = "h a"
 }

@@ -17,8 +17,11 @@ final class CurrentWeatherView: BaseView, ViewModelable {
     var viewModel: ViewModel! {
         didSet {
             viewModel.iconUpdatePublisher
-                .sink { [weak self] dayTime, code in
-                    self?.iconManager.setIcon(code: code, dayTime: dayTime)
+                .sink { [weak self] code, dayPeriod in
+                    self?.weatherIconView.image = Resources.Images.Weather.weatherIcon(
+                        code: code,
+                        dayPriod: dayPeriod
+                    )
                 }
                 .store(in: &cancellables)
             
@@ -34,15 +37,11 @@ final class CurrentWeatherView: BaseView, ViewModelable {
             viewModel.locationPublisher
                 .assignToTextOnLabel(locationLabel)
                 .store(in: &cancellables)
-            
         }
     }
     
-    private let iconManager = WeatherIconManager()
     private var cancellables = Set<AnyCancellable>()
-    
-    
-    
+
     //MARK: - Views
     
     private lazy var mainVStack = UIStackView(
@@ -85,7 +84,7 @@ final class CurrentWeatherView: BaseView, ViewModelable {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = Resources.Strings.currentWeatherTitle
-        label.font = Resources.Fonts.system(size: 17, weight: .semibold)
+        label.font = Resources.Fonts.system(weight: .semibold)
         label.textColor = Resources.Colors.title
         return label
     }()
@@ -112,18 +111,13 @@ final class CurrentWeatherView: BaseView, ViewModelable {
         return label
     }()
     
-    private lazy var weatherIconView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
+    private lazy var weatherIconView = UIImageView(contentMode: .scaleAspectFit)
     
-    private lazy var locationImageView: UIImageView = {
-        let imageView = UIImageView(image: Resources.Images.location)
-        imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = .secondaryLabel
-        return imageView
-    }()
+    private lazy var locationImageView = UIImageView(
+        image: Resources.Images.location,
+        tintColor: .secondaryLabel,
+        contentMode: .scaleAspectFit
+    )
     
     //MARK: - Lyfecycle
     
@@ -136,10 +130,6 @@ final class CurrentWeatherView: BaseView, ViewModelable {
     
     override func configureAppearance() {
         backgroundColor = Resources.Colors.secondaryBackground
-        
-        iconManager.$icon
-            .assign(to: \.image, on: weatherIconView)
-            .store(in: &cancellables)
     }
     
     override func setupViews() {

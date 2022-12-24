@@ -11,6 +11,5 @@ import Combine
 protocol WeatherDetailsCellViewModel {
     var type: WeatherDetails { get }
     var title: String { get }
-    var value: Double { get }
     var valuePublisher: AnyPublisher<Double, Never> { get }
 }

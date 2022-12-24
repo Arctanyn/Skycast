@@ -14,18 +14,24 @@ final class CurrentWeatherViewModelImpl: CurrentWeatherViewModel {
     
     @Published private var weather: CurrentWeather?
     @Published private var location: Location?
+    @Published private var temperatureUnits: TemperatureUnits
     
-    var iconUpdatePublisher: AnyPublisher<(dayTime: DayTime, code: Int), Never> {
-        dayTimePublisher.combineLatest(codePublisher)
-            .map { (dayTime: $0, code: $1) }
+    var iconUpdatePublisher: AnyPublisher<(code: Int, dayPeriod: DayPeriod), Never> {
+        codePublisher.combineLatest(dayPeriodPublisher)
+            .map { (code: $0, dayPeriod: $1) }
             .eraseToAnyPublisher()
     }
     
     var temperaturePublisher: AnyPublisher<Temperature, Never> {
-        $weather
-            .compactMap { $0?.tempC?.rounded() }
-            .map { Int($0) }
-            .mapToTemperature(in: .celsius)
+        $weather.combineLatest($temperatureUnits)
+            .compactMap { weather, units in
+                switch units {
+                case .celsius:
+                    return weather?.tempC?.convertToTemberature(in: units)
+                case .fahrenheit:
+                    return weather?.tempF?.convertToTemberature(in: units)
+                }
+            }
             .eraseToAnyPublisher()
     }
     
@@ -44,10 +50,10 @@ final class CurrentWeatherViewModelImpl: CurrentWeatherViewModel {
             .eraseToAnyPublisher()
     }
     
-    private var dayTimePublisher: AnyPublisher<DayTime, Never> {
+    private var dayPeriodPublisher: AnyPublisher<DayPeriod, Never> {
         $weather
             .compactMap { $0?.isDay }
-            .compactMap { DayTime(rawValue: $0) }
+            .compactMapToDayPeriod()
             .eraseToAnyPublisher()
     }
     
@@ -57,16 +63,10 @@ final class CurrentWeatherViewModelImpl: CurrentWeatherViewModel {
             .eraseToAnyPublisher()
     }
     
-    init(weather: CurrentWeather? = nil, location: Location? = nil) {
+    init(weather: CurrentWeather? = nil, location: Location? = nil, temperatureUnits: TemperatureUnits) {
         self.weather = weather
         self.location = location
-    }
-    
-    //MARK: - Methods
-    
-    func updateWeather(_ weather: CurrentWeather?, for location: Location?) {
-        self.weather = weather
-        self.location = location
+        self.temperatureUnits = temperatureUnits
     }
     
 }

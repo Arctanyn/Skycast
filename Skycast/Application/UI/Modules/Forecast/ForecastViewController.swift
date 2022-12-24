@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-class ForecastViewController: BaseViewController, ViewModelable {
+final class ForecastViewController: BaseViewController, ViewModelable {
     
     typealias ViewModel = ForecastViewModel
     
@@ -78,8 +78,10 @@ class ForecastViewController: BaseViewController, ViewModelable {
         tableView.showsVerticalScrollIndicator = false
         
         tableView.register(WeatherDetailsTableViewCell.self, forCellReuseIdentifier: WeatherDetailsTableViewCell.identifier)
+        
+        tableView.register(HourlyForecastTableViewCell.self, forCellReuseIdentifier: HourlyForecastTableViewCell.identifier)
+        
         tableView.register(DailyForecastTableViewCell.self, forCellReuseIdentifier: DailyForecastTableViewCell.identifier)
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
         return tableView
     }()
@@ -242,13 +244,14 @@ extension ForecastViewController: UITableViewDataSource, UITableViewDelegate {
             let cell = tableView.dequeueReusableCell(withIdentifier: WeatherDetailsTableViewCell.identifier, for: indexPath) as! WeatherDetailsTableViewCell
             cell.viewModel = viewModel.viewModelForWeatherDetailsCell(at: indexPath)
             return cell
+        case .hourly:
+            let cell = tableView.dequeueReusableCell(withIdentifier: HourlyForecastTableViewCell.identifier, for: indexPath) as! HourlyForecastTableViewCell
+            cell.viewModel = viewModel.viewModelForHourlyForecastCell(at: indexPath)
+            return cell
         case .forecast:
             let cell = tableView.dequeueReusableCell(withIdentifier: DailyForecastTableViewCell.identifier, for: indexPath) as! DailyForecastTableViewCell
             cell.changeLabelsColor(to: indexPath.row == 0 ? Resources.Colors.blue : .label)
             cell.viewModel = viewModel.viewModelForDailyForecastCell(at: indexPath)
-            return cell
-        @unknown default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             return cell
         }
     }

@@ -61,12 +61,9 @@ final class WeatherTemperatureView: BaseView, ViewModelable {
 //MARK: - Private methods
 
 private extension WeatherTemperatureView {
-    func setupTemperatureView<P: Publisher>(_ view: TemperatureView, withPublisher publisher: P) where P.Output == Int, P.Failure == Never {
+    func setupTemperatureView<P: Publisher>(_ view: TemperatureView, withPublisher publisher: P) where P.Output == Temperature, P.Failure == Never {
         publisher
-            .mapToTemperature(in: .celsius)
-            .sink { temperature in
-                view.setupViews(withTemperature: temperature)
-            }
+            .sink { view.setupViews(withTemperature: $0) }
             .store(in: &cancellables)
     }
 }

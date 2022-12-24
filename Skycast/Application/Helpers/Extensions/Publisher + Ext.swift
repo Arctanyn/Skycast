@@ -18,4 +18,12 @@ extension Publisher {
         map { Temperature(degrees: $0, units: units) }
             .eraseToAnyPublisher()
     }
+    
+    func compactMapToDayPeriod() -> AnyPublisher<DayPeriod, Never> where Output == Int, Failure == Never {
+        compactMap {
+            DayPeriod(rawValue: $0)
+        }
+        .eraseToAnyPublisher()
+    }
 }
+

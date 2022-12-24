@@ -32,12 +32,10 @@ final class WeatherDetailsTableViewCell: BaseTableViewCell, ViewModelable {
     
     //MARK: - Views
     
-    private lazy var iconImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.tintColor = Resources.Colors.darkText
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
+    private lazy var iconImageView = UIImageView(
+        tintColor: Resources.Colors.darkText,
+        contentMode: .scaleAspectFit
+    )
     
     private lazy var titleLabel = UILabel(
         textColor: Resources.Colors.darkText,
@@ -94,6 +92,8 @@ private extension WeatherDetailsTableViewCell {
             text = "\(value.toRoundedInt)º"
         case .visibility:
             text = "\(value) Km"
+        case .uvIndex:
+            text = "\(value.toRoundedInt)"
         }
         
         valueLabel.text = text

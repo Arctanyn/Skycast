@@ -24,7 +24,7 @@ final class ForecastViewModelImpl: ForecastViewModel {
         case .details:
             return weatherDeatils.count
         case .hourly:
-            return 0
+            return weather?.forecast?.forecastday?.first?.hour?.count ?? 0
         case .forecast:
             return weather?.forecast?.forecastday?.count ?? 0
         }
@@ -64,6 +64,7 @@ final class ForecastViewModelImpl: ForecastViewModel {
     
     private var cancellables = Set<AnyCancellable>()
     
+    private let temperatureUnits: TemperatureUnits = .celsius
     private let weatherDeatils = WeatherDetails.allCases
     private let locationManager: UserLocationManager
     private let weatherService: WeatherAPIService
@@ -112,11 +113,16 @@ final class ForecastViewModelImpl: ForecastViewModel {
     }
     
     func viewModelForCurrentWeather() -> CurrentWeatherViewModel {
-        return CurrentWeatherViewModelImpl(weather: weather?.current, location: weather?.location)
+        return CurrentWeatherViewModelImpl(
+            weather: weather?.current,
+            location: weather?.location,
+            temperatureUnits: temperatureUnits
+        )
     }
     
     func viewModelForCurrentTemperatureHeader() -> WeatherTemperatureViewModel {
-        return WeatherTemperatureViewModelImpl(day: weather?.forecast?.forecastday?.first?.day)
+        let day = weather?.forecast?.forecastday?.first?.day
+        return WeatherTemperatureViewModelImpl(day: day, temperatureUnits: temperatureUnits)
     }
     
     func viewModelForWeatherDetailsCell(at indexPath: IndexPath) -> WeatherDetailsCellViewModel {
@@ -124,14 +130,22 @@ final class ForecastViewModelImpl: ForecastViewModel {
         return WeatherDetailsCellViewModelImpl(weather: weather?.current, detailsType: detailsType)
     }
     
-    func viewModelForDailyForecastCell(at indexPath: IndexPath) -> DailyForecastCellViewModel {
-        let forecastDay = weather?.forecast?.forecastday?[indexPath.row]
-        return DailyForecastCellViewModelImpl(forecastDay: forecastDay)
+    func viewModelForHourlyForecastCell(at indexPath: IndexPath) -> HourlyForecastCellViewModel {
+        let hour = weather?.forecast?.forecastday?.first?.hour?[indexPath.row]
+        return HourlyForecastCellViewModelImpl(hour: hour, temperatureUnits: temperatureUnits)
     }
     
-    //MARK: - Private methods
-    
-    private func setBindings() {
+    func viewModelForDailyForecastCell(at indexPath: IndexPath) -> DailyForecastCellViewModel {
+        let forecastDay = weather?.forecast?.forecastday?[indexPath.row]
+        return DailyForecastCellViewModelImpl(forecastDay: forecastDay, temperatureUnits: temperatureUnits)
+    }
+
+}
+
+//MARK: - Private methods
+
+private extension ForecastViewModelImpl {
+    func setBindings() {
         segmentSelectionSubject
             .compactMap { WeatherInfoSegment(rawValue: $0) }
             .sink { [weak self] segment in
@@ -153,7 +167,4 @@ final class ForecastViewModelImpl: ForecastViewModel {
             }
             .store(in: &cancellables)
     }
-    
-    
-    
 }

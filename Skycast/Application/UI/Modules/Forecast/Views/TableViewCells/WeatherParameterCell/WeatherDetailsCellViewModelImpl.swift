@@ -22,21 +22,6 @@ final class WeatherDetailsCellViewModelImpl: WeatherDetailsCellViewModel {
         detailsType.rawValue
     }
     
-    var value: Double {
-        guard let weather else { return 0 }
-        
-        switch detailsType {
-        case .wind:
-            return weather.windKph ?? 0
-        case .humidity:
-            return Double(weather.humidity ?? 0)
-        case .pressure:
-            return weather.pressureIn ?? 0
-        case .visibility:
-            return weather.visKM ?? 0
-        }
-    }
-    
     var valuePublisher: AnyPublisher<Double, Never> {
         $weather
             .compactMap { $0 }
@@ -50,6 +35,8 @@ final class WeatherDetailsCellViewModelImpl: WeatherDetailsCellViewModel {
                     return currentWeather.pressureIn ?? 0
                 case .visibility:
                     return currentWeather.visKM ?? 0
+                case .uvIndex:
+                    return currentWeather.uv ?? 0
                 case .none:
                     return 0
                 }

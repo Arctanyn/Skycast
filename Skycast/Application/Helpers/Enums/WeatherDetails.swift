@@ -12,6 +12,7 @@ enum WeatherDetails: String, CaseIterable {
     case humidity = "HUMIDITY"
     case pressure = "PRESSURE"
     case visibility = "VISIBILITY"
+    case uvIndex = "UV INDEX"
     
     var icon: UIImage {
         switch self {
@@ -23,6 +24,8 @@ enum WeatherDetails: String, CaseIterable {
             return Resources.Images.Weather.arrowDownUp
         case .visibility:
             return Resources.Images.Weather.eye
+        case .uvIndex:
+            return Resources.Images.Weather.sun
         }
     }
 }

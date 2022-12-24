@@ -29,14 +29,16 @@ final class DailyForecastTableViewCell: BaseTableViewCell, ViewModelable {
             
             viewModel.weatherCodePublisher
                 .sink { [weak self] code in
-                    self?.weatherIconManager.setIcon(code: code, dayTime: .day)
+                    self?.weatherIconImageView.image = Resources.Images.Weather.weatherIcon(
+                        code: code,
+                        dayPriod: .day
+                    )
                 }
                 .store(in: &cancellables)
         }
     }
     
     private var cancellables = Set<AnyCancellable>()
-    private let weatherIconManager = WeatherIconManager()
     
     //MARK: - Views
     
@@ -50,11 +52,7 @@ final class DailyForecastTableViewCell: BaseTableViewCell, ViewModelable {
     
     private lazy var weekdayLabel = UILabel(font: Resources.Fonts.system(weight: .semibold))
     
-    private lazy var weatherIconImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
+    private lazy var weatherIconImageView = UIImageView(contentMode: .scaleAspectFit)
     
     private lazy var temperaturesHStack = UIStackView(
         axis: .horizontal,
@@ -83,10 +81,6 @@ final class DailyForecastTableViewCell: BaseTableViewCell, ViewModelable {
     
     override func configureAppearance() {
         backgroundColor = .clear
-        
-        weatherIconManager.$icon
-            .assign(to: \.image, on: weatherIconImageView)
-            .store(in: &cancellables)
     }
     
     override func setupViews() {

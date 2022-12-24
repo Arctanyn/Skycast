@@ -9,7 +9,7 @@ import Foundation
 import CoreLocation
 import Combine
 
-class WeatherAPIServiceImpl: WeatherAPIService {
+final class WeatherAPIServiceImpl: WeatherAPIService {
     
     //MARK: Properties
     

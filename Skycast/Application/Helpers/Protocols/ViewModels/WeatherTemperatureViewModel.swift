@@ -9,6 +9,6 @@ import Foundation
 import Combine
 
 protocol WeatherTemperatureViewModel {
-    var minTemperaturePublisher: AnyPublisher<Int, Never> { get }
-    var maxTemperaturePublisher: AnyPublisher<Int, Never> { get }
+    var minTemperaturePublisher: AnyPublisher<Temperature, Never> { get }
+    var maxTemperaturePublisher: AnyPublisher<Temperature, Never> { get }
 }

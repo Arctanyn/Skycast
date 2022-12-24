@@ -13,6 +13,7 @@ final class DailyForecastCellViewModelImpl: DailyForecastCellViewModel {
     //MARK: Properties
     
     @Published private var forecastDay: ForecastDay?
+    @Published private var temperatureUnits: TemperatureUnits
     
     var temperaturesPublisher: AnyPublisher<(low: Temperature, high: Temperature), Never> {
         lowTemperaturePublisher.combineLatest(highTemperaturePublisher)
@@ -34,25 +35,36 @@ final class DailyForecastCellViewModelImpl: DailyForecastCellViewModel {
     }
     
     private var lowTemperaturePublisher: AnyPublisher<Temperature, Never> {
-        $forecastDay
-            .compactMap { $0?.day?.mintempC }
-            .map { $0.toRoundedInt }
-            .mapToTemperature(in: .celsius)
+        $forecastDay.combineLatest($temperatureUnits)
+            .compactMap { weather, units in
+                switch units {
+                case .celsius:
+                    return weather?.day?.mintempC?.convertToTemberature(in: units)
+                case .fahrenheit:
+                    return weather?.day?.mintempF?.convertToTemberature(in: units)
+                }
+            }
             .eraseToAnyPublisher()
     }
     
     private var highTemperaturePublisher: AnyPublisher<Temperature, Never> {
-        $forecastDay
-            .compactMap { $0?.day?.maxtempC }
-            .map { $0.toRoundedInt }
-            .mapToTemperature(in: .celsius)
+        $forecastDay.combineLatest($temperatureUnits)
+            .compactMap { weather, units in
+                switch units {
+                case .celsius:
+                    return weather?.day?.maxtempC?.convertToTemberature(in: units)
+                case .fahrenheit:
+                    return weather?.day?.maxtempF?.convertToTemberature(in: units)
+                }
+            }
             .eraseToAnyPublisher()
     }
     
     //MARK: - Initialization
-    
-    init(forecastDay: ForecastDay? = nil) {
+  
+    init(forecastDay: ForecastDay? = nil, temperatureUnits: TemperatureUnits) {
         self.forecastDay = forecastDay
+        self.temperatureUnits = temperatureUnits
     }
     
 }
