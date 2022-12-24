@@ -75,10 +75,7 @@ final class WeatherDetailsTableViewCell: BaseTableViewCell, ViewModelable {
         let iconBottomConstraint = iconImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
         iconBottomConstraint.priority = .defaultLow
         iconBottomConstraint.isActive = true
-        
-        
     }
-
     
 }
 

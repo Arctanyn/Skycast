@@ -21,10 +21,11 @@ final class CurrentWeatherViewModelImpl: CurrentWeatherViewModel {
             .eraseToAnyPublisher()
     }
     
-    var temperaturePublisher: AnyPublisher<Int, Never> {
+    var temperaturePublisher: AnyPublisher<Temperature, Never> {
         $weather
             .compactMap { $0?.tempC?.rounded() }
             .map { Int($0) }
+            .mapToTemperature(in: .celsius)
             .eraseToAnyPublisher()
     }
     
@@ -54,6 +55,11 @@ final class CurrentWeatherViewModelImpl: CurrentWeatherViewModel {
         $weather
             .compactMap { $0?.condition?.code }
             .eraseToAnyPublisher()
+    }
+    
+    init(weather: CurrentWeather? = nil, location: Location? = nil) {
+        self.weather = weather
+        self.location = location
     }
     
     //MARK: - Methods

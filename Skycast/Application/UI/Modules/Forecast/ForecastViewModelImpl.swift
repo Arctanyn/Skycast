@@ -26,7 +26,7 @@ final class ForecastViewModelImpl: ForecastViewModel {
         case .hourly:
             return 0
         case .forecast:
-            return 0
+            return weather?.forecast?.forecastday?.count ?? 0
         }
     }
     
@@ -85,7 +85,7 @@ final class ForecastViewModelImpl: ForecastViewModel {
         locationManager.updateLocation()
     }
     
-    func requestWeather(for location: CLLocation) {
+    private func requestWeather(for location: CLLocation) {
         weatherService.getWeather(route: .forecast, for: location)
             .mapError { error in
                 switch error {
@@ -112,9 +112,7 @@ final class ForecastViewModelImpl: ForecastViewModel {
     }
     
     func viewModelForCurrentWeather() -> CurrentWeatherViewModel {
-        let viewModel = CurrentWeatherViewModelImpl()
-        viewModel.updateWeather(weather?.current, for: weather?.location)
-        return viewModel
+        return CurrentWeatherViewModelImpl(weather: weather?.current, location: weather?.location)
     }
     
     func viewModelForCurrentTemperatureHeader() -> WeatherTemperatureViewModel {
@@ -124,6 +122,11 @@ final class ForecastViewModelImpl: ForecastViewModel {
     func viewModelForWeatherDetailsCell(at indexPath: IndexPath) -> WeatherDetailsCellViewModel {
         let detailsType = weatherDeatils[indexPath.row]
         return WeatherDetailsCellViewModelImpl(weather: weather?.current, detailsType: detailsType)
+    }
+    
+    func viewModelForDailyForecastCell(at indexPath: IndexPath) -> DailyForecastCellViewModel {
+        let forecastDay = weather?.forecast?.forecastday?[indexPath.row]
+        return DailyForecastCellViewModelImpl(forecastDay: forecastDay)
     }
     
     //MARK: - Private methods

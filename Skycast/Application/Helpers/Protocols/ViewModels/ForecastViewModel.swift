@@ -23,4 +23,5 @@ protocol ForecastViewModel {
     func viewModelForCurrentWeather() -> CurrentWeatherViewModel
     func viewModelForCurrentTemperatureHeader() -> WeatherTemperatureViewModel
     func viewModelForWeatherDetailsCell(at indexPath: IndexPath) -> WeatherDetailsCellViewModel
+    func viewModelForDailyForecastCell(at indexPath: IndexPath) -> DailyForecastCellViewModel
 }

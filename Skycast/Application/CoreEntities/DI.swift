@@ -14,13 +14,7 @@ final class DI {
     fileprivate let coordinatorsFactory: CoordinatorsFactory
     let userLocationManager: UserLocationManager
     let urlService: URLService
-    
-    let decoder: JSONDecoder = {
-        let jsonDecoder = JSONDecoder()
-        jsonDecoder.dateDecodingStrategy = .iso8601
-        return jsonDecoder
-    }()
-    
+    fileprivate let weatherJSONDecoder: JSONDecoder
     fileprivate let accessKeysHelper: AccessKeysHelper
     let weatherAPIService: WeatherAPIService
     
@@ -30,8 +24,9 @@ final class DI {
         userLocationManager = UserLocationManagerImpl()
         urlService = URLServiceImpl()
         accessKeysHelper = AccessKeysHelper()
+        weatherJSONDecoder = JSONDecoder()
         weatherAPIService = WeatherAPIServiceImpl(
-            decoder: decoder,
+            decoder: weatherJSONDecoder,
             service: urlService,
             accessKeysHelper: accessKeysHelper
         )

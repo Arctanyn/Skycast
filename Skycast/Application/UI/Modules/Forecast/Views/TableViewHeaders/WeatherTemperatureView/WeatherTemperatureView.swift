@@ -16,9 +16,8 @@ final class WeatherTemperatureView: BaseView, ViewModelable {
     
     var viewModel: ViewModel! {
         didSet {
-            setupTemperatureView(minTemperatureView, withPublisher: viewModel.minTemperaturePublisher)
-            
-            setupTemperatureView(maxTemperatureView, withPublisher: viewModel.maxTemperaturePublisher)
+            setupTemperatureView(lowTemperatureView, withPublisher: viewModel.minTemperaturePublisher)
+            setupTemperatureView(highTemperatureView, withPublisher: viewModel.maxTemperaturePublisher)
         }
     }
     
@@ -29,16 +28,16 @@ final class WeatherTemperatureView: BaseView, ViewModelable {
     private lazy var mainHStack: UIStackView = UIStackView(
         axis: .horizontal,
         spacing: 60,
-        arrangedSubviews: [minTemperatureView, maxTemperatureView]
+        arrangedSubviews: [lowTemperatureView, highTemperatureView]
     )
     
-    private lazy var minTemperatureView: TemperatureView = {
+    private lazy var lowTemperatureView: TemperatureView = {
         let temperatureView = TemperatureView(title: "LOW")
         temperatureView.alpha = 0.6
         return temperatureView
     }()
     
-    private lazy var maxTemperatureView = TemperatureView(title: "HIGH")
+    private lazy var highTemperatureView = TemperatureView(title: "HIGH")
     
     //MARK: - Methods
     

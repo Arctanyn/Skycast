@@ -76,8 +76,11 @@ class ForecastViewController: BaseViewController, ViewModelable {
         tableView.backgroundColor = Resources.Colors.secondaryBackground
         tableView.allowsSelection = false
         tableView.showsVerticalScrollIndicator = false
+        
         tableView.register(WeatherDetailsTableViewCell.self, forCellReuseIdentifier: WeatherDetailsTableViewCell.identifier)
+        tableView.register(DailyForecastTableViewCell.self, forCellReuseIdentifier: DailyForecastTableViewCell.identifier)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        
         return tableView
     }()
     
@@ -209,11 +212,19 @@ private extension ForecastViewController {
     }
     
     func setupTableViewHeader(for segment: WeatherInfoSegment) {
-        if segment == .details {
+        switch segment {
+        case .details:
             temperaturesView.viewModel = viewModel.viewModelForCurrentTemperatureHeader()
             weatherTableView.tableHeaderView = temperaturesView
-        } else {
+        case .hourly:
             weatherTableView.tableHeaderView = nil
+        case .forecast:
+            weatherTableView.tableHeaderView = DailyForecastHeaderView(
+                frame: CGRect(
+                    origin: weatherTableView.frame.origin,
+                    size: CGSize(width: weatherTableView.bounds.width, height: 40)
+                )
+            )
         }
     }
 }
@@ -228,10 +239,13 @@ extension ForecastViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch viewModel.selectedWeatherSegment {
         case .details:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: WeatherDetailsTableViewCell.identifier, for: indexPath) as? WeatherDetailsTableViewCell else {
-                fatalError("Cannot get a cell with the specified type")
-            }
+            let cell = tableView.dequeueReusableCell(withIdentifier: WeatherDetailsTableViewCell.identifier, for: indexPath) as! WeatherDetailsTableViewCell
             cell.viewModel = viewModel.viewModelForWeatherDetailsCell(at: indexPath)
+            return cell
+        case .forecast:
+            let cell = tableView.dequeueReusableCell(withIdentifier: DailyForecastTableViewCell.identifier, for: indexPath) as! DailyForecastTableViewCell
+            cell.changeLabelsColor(to: indexPath.row == 0 ? Resources.Colors.blue : .label)
+            cell.viewModel = viewModel.viewModelForDailyForecastCell(at: indexPath)
             return cell
         @unknown default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)

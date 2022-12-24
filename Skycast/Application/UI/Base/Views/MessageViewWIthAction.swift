@@ -27,13 +27,13 @@ final class MessageViewWIthAction: BaseView {
         
     private lazy var messageTitleLabel = UILabel(
         font: Resources.Fonts.system(size: 25, weight: .bold),
-        alignment: .center,
+        textAlignment: .center,
         numberOfLines: 2
     )
     
     private lazy var messageDescriptionLabel = UILabel(
         textColor: .secondaryLabel, font: Resources.Fonts.system(),
-        alignment: .center,
+        textAlignment: .center,
         numberOfLines: 5
     )
     

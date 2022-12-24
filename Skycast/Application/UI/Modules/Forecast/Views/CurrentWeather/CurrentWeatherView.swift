@@ -23,7 +23,6 @@ final class CurrentWeatherView: BaseView, ViewModelable {
                 .store(in: &cancellables)
             
             viewModel.temperaturePublisher
-                .mapToTemperature(in: .celsius)
                 .map { $0.stringFormat }
                 .assignToTextOnLabel(temperatureLabel)
                 .store(in: &cancellables)
@@ -41,6 +40,8 @@ final class CurrentWeatherView: BaseView, ViewModelable {
     
     private let iconManager = WeatherIconManager()
     private var cancellables = Set<AnyCancellable>()
+    
+    
     
     //MARK: - Views
     
@@ -169,9 +170,15 @@ final class CurrentWeatherView: BaseView, ViewModelable {
 
 private extension CurrentWeatherView {
     func addShadow() {
-        layer.shadowOpacity = 0.25
+        layer.shadowPath = UIBezierPath(
+            roundedRect: CGRect(
+                x: 0, y: 7, width: frame.width, height: frame.height + 7
+            ),
+            cornerRadius: 20
+        ).cgPath
+        
+        layer.shadowOpacity = 0.4
         layer.shadowRadius = 10
-        layer.shadowOffset = CGSize(width: 0, height: 7)
     }
 }
 
