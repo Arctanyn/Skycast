@@ -8,7 +8,7 @@
 import Foundation
 
 final class CoordinatorsFactoryImpl: CoordinatorsFactory {
-    
+
     //MARK: Properties
     
     private let assemblyBuilder: AssemblyBuilder
@@ -24,6 +24,12 @@ final class CoordinatorsFactoryImpl: CoordinatorsFactory {
     func createApplicationCoordinator(router: Router) -> ApplicationCoordinator {
         return ApplicationCoordinator(assemblyBuilder: assemblyBuilder, coordinatorsFactory: self, router: router)
     }
-
     
+    func createForecastCoordinator(router: Router) -> ForecastCoordinator {
+        return ForecastCoordinator(assemblyBuilder: assemblyBuilder, coordinatorsFactory: self, router: router)
+    }
+
+    func createMyLocationsCoordinator(router: Router) -> MyLocationsCoordinator {
+        return MyLocationsCoordinator(assemblyBuilder: assemblyBuilder, coordinatorsFactory: self, router: router)
+    }
 }

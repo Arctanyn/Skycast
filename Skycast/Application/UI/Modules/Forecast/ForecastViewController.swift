@@ -109,9 +109,10 @@ final class ForecastViewController: BaseViewController, ViewModelable {
     //MARK: - Methods
     
     override func configureAppearance() {
+        super.configureAppearance()
         title = Resources.Strings.appName
         navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = Resources.Colors.background
+        navigationController?.tabBarItem.title = Resources.Strings.TabBar.forecast
     }
     
     override func setupViews() {

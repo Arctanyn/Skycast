@@ -8,5 +8,6 @@
 import UIKit
 
 protocol AssemblyBuilder {
-    func createHomeModule() -> UIViewController
+    func createForecastModule() -> UIViewController
+    func createMyLocationsModule() -> UIViewController
 }

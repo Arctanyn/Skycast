@@ -26,6 +26,8 @@ enum Resources {
             UIImage(systemName: "location.fill")!
         }
         
+        //MARK: - Weather
+        
         enum Weather {
             static var sun: UIImage {
                 UIImage(systemName: "sun.max.fill")!
@@ -123,14 +125,46 @@ enum Resources {
                 return weatherIconManger.getIcon(code: code, dayPeriod: dayPriod)
             }
         }
+        
+        //MARK: - TabBar
+        
+        enum TabBar {
+            case forecast
+            case myLocations
+            
+            var icon: UIImage {
+                switch self {
+                case .forecast:
+                    return UIImage(systemName: "cloud.sun")!
+                case .myLocations:
+                    return UIImage(systemName: "list.bullet.indent")!
+                }
+            }
+            
+            var selectedIcon: UIImage {
+                switch self {
+                case .forecast:
+                    return UIImage(systemName: "cloud.sun.fill")!
+                case .myLocations:
+                    return icon
+                }
+            }
+        }
     }
     
     //MARK: - Strings
     
     enum Strings {
+        
         static var appName: String { "Skycast" }
         static var currentWeatherTitle: String { "RIGHT NOW" }
         
+        //MARK: - TabBar
+        
+        enum TabBar {
+            static var forecast: String { "Forecast" }
+            static var myLocations: String { "My Locations" }
+        }
     }
     
     //MARK: - Fonts

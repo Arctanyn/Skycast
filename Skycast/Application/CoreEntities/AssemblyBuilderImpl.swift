@@ -8,9 +8,14 @@
 import UIKit
 
 final class AssemblyBuilderImpl: AssemblyBuilder {
+    
+    //MARK: Properties
+    
     weak var di: DI!
     
-    func createHomeModule() -> UIViewController {
+    //MARK: - Methods
+    
+    func createForecastModule() -> UIViewController {
         let view = ForecastViewController()
 
         let viewModel = ForecastViewModelImpl(
@@ -18,6 +23,12 @@ final class AssemblyBuilderImpl: AssemblyBuilder {
             weatherService: di.weatherAPIService
         )
         view.viewModel = viewModel
+        
+        return view
+    }
+    
+    func createMyLocationsModule() -> UIViewController {
+        let view = MyLocationsViewController()
         
         return view
     }

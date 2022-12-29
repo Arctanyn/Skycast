@@ -2,14 +2,17 @@
 //  ApplicationCoordinator.swift
 //  Skycast
 //
-//  Created by Малиль Дугулюбгов on 16.12.2022.
+//  Created by Малиль Дугулюбгов on 29.12.2022.
 //
 
-import Foundation
+import UIKit
 
-final class ApplicationCoordinator: Coordinator {
+final class ApplicationCoordinator: BaseCoordinator {
     
     //MARK: Properties
+    
+    private let tabBarController = MainTabBarController()
+    private var navigationControllers = [UINavigationController]()
     
     private let assemblyBuilder: AssemblyBuilder
     private let coordinatorsFactory: CoordinatorsFactory
@@ -25,8 +28,38 @@ final class ApplicationCoordinator: Coordinator {
     
     //MARK: - Methods
     
-    func start() {
-        let vc = assemblyBuilder.createHomeModule()
-        router.setRootModule(vc, hideBar: false)
+    override func start() {
+        prepareTabs()
+        tabBarController.configureViewControllers(navigationControllers)
+        router.setRootModule(tabBarController, hideBar: true)
+    }
+    
+    //MARK: - Private methods
+    
+    private func prepareTabs() {
+        Tabs.allCases.forEach { setupCoordinator(for: $0) }
+        childCoordinators.forEach { $0.start() }
+    }
+    
+    private func setupCoordinator(for tab: Tabs) {
+        let navigationController = UINavigationController()
+        navigationController.tabBarItem.tag = tab.rawValue
+        navigationControllers.append(navigationController)
+        let router = RouterImpl(rootController: navigationController)
+
+        switch tab {
+        case .forecast:
+            let coordinator = coordinatorsFactory.createForecastCoordinator(router: router)
+            coordinator.finishFlow = { [weak self] in
+                self?.childDidFinish(coordinator)
+            }
+            addChild(coordinator)
+        case .myLocations:
+            let coordinator = coordinatorsFactory.createMyLocationsCoordinator(router: router)
+            coordinator.finishFlow = { [weak self] in
+                self?.childDidFinish(coordinator)
+            }
+            addChild(coordinator)
+        }
     }
 }
