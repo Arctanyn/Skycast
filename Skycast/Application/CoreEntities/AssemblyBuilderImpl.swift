@@ -27,10 +27,23 @@ final class AssemblyBuilderImpl: AssemblyBuilder {
         return view
     }
     
-    func createMyLocationsModule() -> UIViewController {
+    func createMyLocationsModule(coordinator: MyLocationsCoordinator) -> UIViewController {
         let view = MyLocationsViewController()
         
-        let viewModel = MyLocationsViewModelImpl(weatherService: di.weatherAPIService)
+        let viewModel = MyLocationsViewModelImpl(weatherService: di.weatherAPIService, coordinator: coordinator)
+        view.viewModel = viewModel
+        
+        return view
+    }
+    
+    func createLocationForecastModule(city: City, coordinator: LocationForecastCoordinator) -> UIViewController {
+        let view = LocationForecastViewController()
+        
+        let viewModel = LocationForecastViewModelImpl(
+            city: city,
+            weatherService: di.weatherAPIService,
+            coodinator: coordinator
+        )
         view.viewModel = viewModel
         
         return view

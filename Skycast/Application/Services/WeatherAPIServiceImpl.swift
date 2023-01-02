@@ -43,15 +43,15 @@ final class WeatherAPIServiceImpl: WeatherAPIService {
     //MARK: - Methods
     
     func getForecast(for location: CLLocationCoordinate2D) throws -> AnyPublisher<Weather, HTTPError> {
-        try getForecast(latitude: location.latitude, longitude: location.longitude)
+        try getForecast(coordinate: (location.latitude, location.longitude))
     }
     
-    func getForecast(latitude: CLLocationDegrees, longitude: CLLocationDegrees) throws -> AnyPublisher<Weather, HTTPError> {
+    func getForecast(coordinate: Coordinate) throws -> AnyPublisher<Weather, HTTPError> {
         guard let url = service.createURL(
             scheme: WeatherHTTPBase.scheme,
             host: WeatherHTTPBase.host,
             path: WeatherAPIRoute.forecast.path,
-            queryParameters: prepareForecastQueryParameters(coordinate: (latitude, longitude), days: 3)
+            queryParameters: prepareForecastQueryParameters(coordinate: coordinate, days: 3)
         ) else {
             throw URLError.invalidURL
         }
@@ -85,8 +85,7 @@ private extension WeatherAPIServiceImpl {
             .eraseToAnyPublisher()
     }
     
-    func prepareForecastQueryParameters(coordinate: (latitude: CLLocationDegrees, longitude: CLLocationDegrees),
-                                        days: Int) -> [String: String] {
+    func prepareForecastQueryParameters(coordinate: Coordinate, days: Int) -> [String: String] {
         return [
             "q": "\(coordinate.latitude) \(coordinate.longitude)",
             "key": accessKey,

@@ -126,7 +126,7 @@ private extension MyLocationsViewController {
     
     func setupSearchResultsController() {
         guard let locationsSearchResultsController = locationsSearchController.searchResultsController as? LocationsSearchResultsController else { return }
-        locationsSearchResultsController.viewModel = viewModel.viewModelForLocationsSearchResultController()
+        locationsSearchResultsController.viewModel = viewModel.viewModelForLocationsSearchResultsController()
     }
 }
 

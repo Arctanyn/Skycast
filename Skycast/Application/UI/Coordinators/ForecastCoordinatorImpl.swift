@@ -1,5 +1,5 @@
 //
-//  ForecastCoordinator.swift
+//  ForecastCoordinatorImpl.swift
 //  Skycast
 //
 //  Created by Малиль Дугулюбгов on 29.12.2022.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class ForecastCoordinator: BaseCoordinator {
+final class ForecastCoordinatorImpl: BaseCoordinator {
     
     //MARK: Properties
     
@@ -27,7 +27,7 @@ final class ForecastCoordinator: BaseCoordinator {
     
     //MARK: - Methods
     
-    override func start() {
+    override func start(with item: Any?) {
         router.setRootModule(assemblyBuilder.createForecastModule(), hideBar: true)
     }
 

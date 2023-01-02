@@ -15,7 +15,7 @@ class BaseCoordinator: Coordinator {
     
     //MARK: - Methods
     
-    func start() {
+    func start(with item: Any?) {
         fatalError("No implementation")
     }
 

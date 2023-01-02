@@ -20,6 +20,8 @@ final class LocationsSearchResultsViewModelImpl: LocationsSearchResultsViewModel
         updateResultsSubject.eraseToAnyPublisher()
     }
     
+    var locationSelectionSubject: PassthroughSubject<IndexPath, Never> = PassthroughSubject()
+    
     var clearResultsSubject: PassthroughSubject<Void, Never> = PassthroughSubject()
     
     private var updateResultsSubject = PassthroughSubject<Void, Never>()
@@ -27,17 +29,31 @@ final class LocationsSearchResultsViewModelImpl: LocationsSearchResultsViewModel
     private var cancellables = Set<AnyCancellable>()
         
     private var cities = [City]()
+    private let coordinator: MyLocationsCoordinator
     
     //MARK: - Initialization
     
-    init() {
+    init(coordinator: MyLocationsCoordinator) {
+        self.coordinator = coordinator
         setBindings()
     }
     
     //MARK: - Methods
     
     func titleForLocation(at indexPath: IndexPath) -> String {
-        cities[indexPath.row].name ?? ""
+        let city = cities[indexPath.row]
+        
+        guard
+            let cityName = city.name,
+            let regionName = city.region,
+            let countryName = city.country
+        else { return "" }
+        
+        if cityName == regionName {
+            return "\(cityName), \(countryName)"
+        } else {
+            return "\(cityName), \(regionName), \(countryName)"
+        }
     }
     
     func updateResults(with cities: [City]) {
@@ -53,6 +69,15 @@ private extension LocationsSearchResultsViewModelImpl {
         clearResultsSubject
             .sink { [weak self] in
                 self?.updateResults(with: [])
+            }
+            .store(in: &cancellables)
+        
+        locationSelectionSubject
+            .compactMap { [weak self] indexPath in
+                self?.cities[indexPath.row]
+            }
+            .sink { [weak self] city in
+                self?.coordinator.showForecastForLocation(with: city)
             }
             .store(in: &cancellables)
     }

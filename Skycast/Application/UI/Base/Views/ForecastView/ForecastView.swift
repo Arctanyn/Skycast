@@ -122,7 +122,11 @@ private extension ForecastView {
     func setBindings() {
         viewModel.weatherInfoSelectionPublisher
             .sink { [weak self] segment in
-                self?.weatherInfoCollectionView.scrollToItem(at: IndexPath(item: segment.rawValue, section: 0), at: .centeredHorizontally, animated: true)
+                self?.weatherInfoCollectionView.scrollToItem(
+                    at: IndexPath(item: segment.rawValue, section: 0),
+                    at: .centeredHorizontally,
+                    animated: true
+                )
             }
             .store(in: &cancellables)
         
@@ -162,8 +166,6 @@ private extension ForecastView {
             self?.weatherInfoSegmentedControl.selectedSegmentIndex = index
             self?.viewModel.weatherSegmentSelected(at: index)
         }
-    
-        
         
         return UICollectionViewCompositionalLayout(section: section)
     }

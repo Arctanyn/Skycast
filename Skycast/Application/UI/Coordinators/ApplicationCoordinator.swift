@@ -28,7 +28,7 @@ final class ApplicationCoordinator: BaseCoordinator {
     
     //MARK: - Methods
     
-    override func start() {
+    override func start(with item: Any?) {
         prepareTabs()
         tabBarController.configureViewControllers(navigationControllers)
         router.setRootModule(tabBarController, hideBar: true)
@@ -38,7 +38,7 @@ final class ApplicationCoordinator: BaseCoordinator {
     
     private func prepareTabs() {
         Tabs.allCases.forEach { setupCoordinator(for: $0) }
-        childCoordinators.forEach { $0.start() }
+        childCoordinators.forEach { $0.start(with: nil) }
     }
     
     private func setupCoordinator(for tab: Tabs) {
@@ -56,6 +56,7 @@ final class ApplicationCoordinator: BaseCoordinator {
             addChild(coordinator)
         case .myLocations:
             let coordinator = coordinatorsFactory.createMyLocationsCoordinator(router: router)
+            
             coordinator.finishFlow = { [weak self] in
                 self?.childDidFinish(coordinator)
             }

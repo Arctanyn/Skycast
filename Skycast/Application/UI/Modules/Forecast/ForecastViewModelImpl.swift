@@ -48,6 +48,7 @@ final class ForecastViewModelImpl: ForecastViewModel {
     
     func updateLocation() {
         isLoading = true
+        isRecievedWeather = false
         locationManager.updateLocation()
     }
     
@@ -91,7 +92,6 @@ private extension ForecastViewModelImpl {
                 .sink { [weak self] completion in
                     if case .failure(let error) = completion {
                         self?.isLoading = false
-                        self?.weather = nil
                         self?.isRecievedWeather = false
                         self?.errorSubject.send(error)
                     }

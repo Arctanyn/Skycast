@@ -21,6 +21,7 @@ final class ForecastViewController: BaseViewController, ViewModelable {
         }
     }
     
+    private var forecastViewTopConsatraint: NSLayoutConstraint!
     private var cancellables = Set<AnyCancellable>()
     
     //MARK: - Views
@@ -60,6 +61,8 @@ final class ForecastViewController: BaseViewController, ViewModelable {
     }
     
     override func constraintViews() {
+        forecastViewTopConsatraint = forecastView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -100)
+        
         NSLayoutConstraint.activate([
             messageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             messageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -68,7 +71,7 @@ final class ForecastViewController: BaseViewController, ViewModelable {
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
-            forecastView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            forecastViewTopConsatraint,
             forecastView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             forecastView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             forecastView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -108,6 +111,7 @@ private extension ForecastViewController {
                         self?.viewModel.updateLocation()
                     }),
                     UIAlertAction(title: "OK", style: .cancel, handler: { _ in
+                        self?.forecastView.alpha = 0
                         self?.messageView.isHidden = false
                     })
                 ])
@@ -118,7 +122,12 @@ private extension ForecastViewController {
     func updateInterface(isRecievedWeather: Bool) {
         if isRecievedWeather {
             forecastView.viewModel = viewModel.viewModelForWeatherForecastView()
+            animateViewAttachmentToTopWithAppearance(
+                forecastView,
+                topConstraint: forecastViewTopConsatraint
+            )
+        } else {
+            forecastView.alpha = 0
         }
-        forecastView.isHidden = !isRecievedWeather
     }
 }

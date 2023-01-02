@@ -13,6 +13,8 @@ protocol Router: Presentable {
     func present(_ module: Presentable, animated: Bool)
     func present(_ module: Presentable, animated: Bool, completion: VoidClosure?)
     
+    func presentInNavigation(_ module: Presentable, animated: Bool)
+    
     func dismiss(animated: Bool)
     func dismiss(animated: Bool, completion: VoidClosure?)
     

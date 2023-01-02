@@ -17,14 +17,16 @@ final class MyLocationsViewModelImpl: MyLocationsViewModel {
     var searchResultsUpdatingPublisher: AnyPublisher<[City], Never> {
         $searchResults.eraseToAnyPublisher()
     }
-    
+        
     private var cancellables = Set<AnyCancellable>()
     private let weatherService: WeatherAPIService
+    private let coordinator: MyLocationsCoordinator
     
     //MARK: - Initialization
     
-    init(weatherService: WeatherAPIService) {
+    init(weatherService: WeatherAPIService, coordinator: MyLocationsCoordinator) {
         self.weatherService = weatherService
+        self.coordinator = coordinator
     }
     
     //MARK: - Methods
@@ -47,7 +49,7 @@ final class MyLocationsViewModelImpl: MyLocationsViewModel {
         }
     }
     
-    func viewModelForLocationsSearchResultController() -> LocationsSearchResultsViewModel {
-        return LocationsSearchResultsViewModelImpl()
+    func viewModelForLocationsSearchResultsController() -> LocationsSearchResultsViewModel {
+        return LocationsSearchResultsViewModelImpl(coordinator: coordinator)
     }
 }

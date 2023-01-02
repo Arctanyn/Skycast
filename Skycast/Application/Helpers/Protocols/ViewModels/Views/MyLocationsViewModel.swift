@@ -11,5 +11,5 @@ import Combine
 protocol MyLocationsViewModel {
     var searchResultsUpdatingPublisher: AnyPublisher<[City], Never> { get }
     func searchCity(query: String)
-    func viewModelForLocationsSearchResultController() -> LocationsSearchResultsViewModel
+    func viewModelForLocationsSearchResultsController() -> LocationsSearchResultsViewModel
 }

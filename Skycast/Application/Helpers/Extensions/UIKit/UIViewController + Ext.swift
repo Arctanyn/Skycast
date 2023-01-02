@@ -22,5 +22,14 @@ extension UIViewController {
         self.title = title
         navigationController?.tabBarItem.title = tabBarItemTitle ?? title
     }
+    
+    func animateViewAttachmentToTopWithAppearance(_ animatedView: UIView, topConstraint: NSLayoutConstraint) {
+        view.layoutIfNeeded()
+        UIView.animate(withDuration: 0.6) { [weak self] in
+            animatedView.alpha = 1
+            topConstraint.constant = 0
+            self?.view.layoutIfNeeded()
+        }
+    }
 }
 

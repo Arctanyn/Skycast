@@ -40,6 +40,12 @@ final class RouterImpl: Router {
         rootController.present(controller, animated: animated, completion: completion)
     }
     
+    func presentInNavigation(_ module: Presentable, animated: Bool) {
+        let controller = module.toPresent
+        let navController = UINavigationController(rootViewController: controller)
+        rootController.present(navController, animated: true)
+    }
+    
     func dismiss(animated: Bool) {
         dismiss(animated: animated, completion: nil)
     }

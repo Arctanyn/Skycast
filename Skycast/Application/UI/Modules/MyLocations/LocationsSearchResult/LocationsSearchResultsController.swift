@@ -77,4 +77,9 @@ extension LocationsSearchResultsController: UITableViewDataSource, UITableViewDe
         cell.backgroundColor = Resources.Colors.background
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        viewModel.locationSelectionSubject.send(indexPath)
+    }
 }

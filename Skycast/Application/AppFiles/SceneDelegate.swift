@@ -21,7 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let (window, coordinator) = appFactory.makeKeyWindowAndCoordinator(with: windowScene)
         
         appCoordinator = coordinator
-        appCoordinator?.start()
+        appCoordinator?.start(with: nil)
         
         self.window = window
         window.overrideUserInterfaceStyle = .dark
