@@ -10,5 +10,7 @@ import CoreLocation
 import Combine
 
 protocol WeatherAPIService {
-    func getWeather(route: WeatherAPIRoute, for location: CLLocation) -> AnyPublisher<Weather, HTTPError>
+    func getForecast(for location: CLLocationCoordinate2D) throws -> AnyPublisher<Weather, HTTPError>
+    func getForecast(latitude: CLLocationDegrees, longitude: CLLocationDegrees) throws -> AnyPublisher<Weather, HTTPError>
+    func searchCity(query: String) throws -> AnyPublisher<[City], HTTPError>
 }

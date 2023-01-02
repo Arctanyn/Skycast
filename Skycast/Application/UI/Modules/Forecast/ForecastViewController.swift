@@ -16,7 +16,6 @@ final class ForecastViewController: BaseViewController, ViewModelable {
     
     var viewModel: ViewModel! {
         didSet {
-            configureWeatherSegments()
             setBindings()
             viewModel.updateLocation()
         }
@@ -26,8 +25,10 @@ final class ForecastViewController: BaseViewController, ViewModelable {
     
     //MARK: - Views
     
-    private lazy var messageView: MessageViewWIthAction = {
-        let msgView = MessageViewWIthAction()
+    private lazy var forecastView = ForecastView()
+    
+    private lazy var messageView: MessageViewWithAction = {
+        let msgView = MessageViewWithAction()
         msgView.setupMessage(
             withTitle: "Weather is unavailable",
             messageDescription: "Could not get weather information. Check your internet connection and try again",
@@ -43,76 +44,11 @@ final class ForecastViewController: BaseViewController, ViewModelable {
         return activityIndicator
     }()
     
-    private lazy var currentWeatherView = CurrentWeatherView()
-    
-    private lazy var weatherInfoSegmentedControl: UISegmentedControl = {
-        let segmentedControl = UISegmentedControl()
-        segmentedControl.selectedSegmentTintColor = .systemBlue
-        
-        segmentedControl.setTitleTextAttributes([
-            .foregroundColor: UIColor.systemBlue,
-            .font: Resources.Fonts.system()
-        ], for: .normal)
-        
-        segmentedControl.setTitleTextAttributes([
-            .foregroundColor: Resources.Colors.background,
-            .font: Resources.Fonts.system(weight: .medium)
-        ], for: .selected)
-        
-        segmentedControl.addTarget(self, action: #selector(weatherSegmentDidChange), for: .valueChanged)
-        return segmentedControl
-    }()
-    
-    private lazy var temperaturesView = WeatherTemperatureView(frame: CGRect(
-        origin: weatherTableView.frame.origin,
-        size: CGSize(
-            width: weatherTableView.bounds.width,
-            height: 120
-        ))
-    )
-    
-    private lazy var weatherTableView: UITableView = {
-        let tableView = UITableView()
-        tableView.backgroundColor = Resources.Colors.secondaryBackground
-        tableView.allowsSelection = false
-        tableView.showsVerticalScrollIndicator = false
-        
-        tableView.register(WeatherDetailsTableViewCell.self, forCellReuseIdentifier: WeatherDetailsTableViewCell.identifier)
-        
-        tableView.register(HourlyForecastTableViewCell.self, forCellReuseIdentifier: HourlyForecastTableViewCell.identifier)
-        
-        tableView.register(DailyForecastTableViewCell.self, forCellReuseIdentifier: DailyForecastTableViewCell.identifier)
-        
-        return tableView
-    }()
-    
-    private lazy var weatherDetailsVStack = UIStackView(
-        axis: .vertical,
-        spacing: 20,
-        arrangedSubviews: [
-            weatherInfoSegmentedControl
-                .padded(insets: .init(top: 0, left: 20, bottom: 0, right: 20)),
-            weatherTableView
-        ]
-    )
-
-    private lazy var mainVStack = UIStackView(
-        axis: .vertical,
-        spacing: 40,
-        arrangedSubviews: [
-            currentWeatherView
-                .padded(insets: .init(top: 0, left: 20, bottom: 0, right: 20)),
-            weatherDetailsVStack
-        ]
-    )
-    
     //MARK: - Methods
     
     override func configureAppearance() {
         super.configureAppearance()
-        title = Resources.Strings.appName
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.tabBarItem.title = Resources.Strings.TabBar.forecast
+
     }
     
     override func setupViews() {
@@ -120,8 +56,7 @@ final class ForecastViewController: BaseViewController, ViewModelable {
         messageView.isHidden = true
         
         view.addSubview(loadingIndicator, useAutoLayout: true)
-        view.addSubview(mainVStack, useAutoLayout: true)
-        setupTableView()
+        view.addSubview(forecastView, useAutoLayout: true)
     }
     
     override func constraintViews() {
@@ -133,10 +68,10 @@ final class ForecastViewController: BaseViewController, ViewModelable {
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
-            mainVStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            mainVStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            mainVStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            mainVStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            forecastView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            forecastView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            forecastView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            forecastView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
     }
 }
@@ -144,11 +79,6 @@ final class ForecastViewController: BaseViewController, ViewModelable {
 //MARK: - Actions
 
 @objc private extension ForecastViewController {
-    func weatherSegmentDidChange() {
-        let seletedIndex = weatherInfoSegmentedControl.selectedSegmentIndex
-        viewModel.segmentSelectionSubject.send(seletedIndex)
-    }
-    
     func messageViewActionButtonTapped() {
         messageView.isHidden = true
         viewModel.updateLocation()
@@ -159,13 +89,6 @@ final class ForecastViewController: BaseViewController, ViewModelable {
 
 private extension ForecastViewController {
     func setBindings() {
-        viewModel.weatherInfoSelectionPublisher
-            .sink { [weak self] segment in
-                self?.weatherTableView.reloadData()
-                self?.setupTableViewHeader(for: segment)
-            }
-            .store(in: &cancellables)
-        
         viewModel.weatherRecievedPublisher
             .sink { [weak self] isRecieved in
                 self?.updateInterface(isRecievedWeather: isRecieved)
@@ -192,69 +115,10 @@ private extension ForecastViewController {
             .store(in: &cancellables)
     }
     
-    func setupTableView() {
-        weatherTableView.dataSource = self
-        weatherTableView.delegate = self
-    }
-    
-    func configureWeatherSegments() {
-        viewModel.segmentsTitles.enumerated().forEach { index, segmentTitle in
-            weatherInfoSegmentedControl.insertSegment(withTitle: segmentTitle, at: index, animated: false)
-        }
-        
-        weatherInfoSegmentedControl.selectedSegmentIndex = viewModel.segmentSelectionSubject.value
-    }
-    
     func updateInterface(isRecievedWeather: Bool) {
         if isRecievedWeather {
-            weatherSegmentDidChange()
+            forecastView.viewModel = viewModel.viewModelForWeatherForecastView()
         }
-        currentWeatherView.viewModel = viewModel.viewModelForCurrentWeather()
-        mainVStack.isHidden = !isRecievedWeather
-        
+        forecastView.isHidden = !isRecievedWeather
     }
-    
-    func setupTableViewHeader(for segment: WeatherInfoSegment) {
-        switch segment {
-        case .details:
-            temperaturesView.viewModel = viewModel.viewModelForCurrentTemperatureHeader()
-            weatherTableView.tableHeaderView = temperaturesView
-        case .hourly:
-            weatherTableView.tableHeaderView = nil
-        case .forecast:
-            weatherTableView.tableHeaderView = DailyForecastHeaderView(
-                frame: CGRect(
-                    origin: weatherTableView.frame.origin,
-                    size: CGSize(width: weatherTableView.bounds.width, height: 40)
-                )
-            )
-        }
-    }
-}
-
-//MARK: - UITableViewDataSource & UITableViewDelegate
-
-extension ForecastViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRows
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch viewModel.selectedWeatherSegment {
-        case .details:
-            let cell = tableView.dequeueReusableCell(withIdentifier: WeatherDetailsTableViewCell.identifier, for: indexPath) as! WeatherDetailsTableViewCell
-            cell.viewModel = viewModel.viewModelForWeatherDetailsCell(at: indexPath)
-            return cell
-        case .hourly:
-            let cell = tableView.dequeueReusableCell(withIdentifier: HourlyForecastTableViewCell.identifier, for: indexPath) as! HourlyForecastTableViewCell
-            cell.viewModel = viewModel.viewModelForHourlyForecastCell(at: indexPath)
-            return cell
-        case .forecast:
-            let cell = tableView.dequeueReusableCell(withIdentifier: DailyForecastTableViewCell.identifier, for: indexPath) as! DailyForecastTableViewCell
-            cell.changeLabelsColor(to: indexPath.row == 0 ? Resources.Colors.blue : .label)
-            cell.viewModel = viewModel.viewModelForDailyForecastCell(at: indexPath)
-            return cell
-        }
-    }
-    
 }

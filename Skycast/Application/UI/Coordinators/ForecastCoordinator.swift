@@ -28,7 +28,7 @@ final class ForecastCoordinator: BaseCoordinator {
     //MARK: - Methods
     
     override func start() {
-        router.setRootModule(assemblyBuilder.createForecastModule(), hideBar: false)
+        router.setRootModule(assemblyBuilder.createForecastModule(), hideBar: true)
     }
 
 }

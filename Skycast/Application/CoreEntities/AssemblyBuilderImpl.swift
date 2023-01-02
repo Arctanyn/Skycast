@@ -30,6 +30,9 @@ final class AssemblyBuilderImpl: AssemblyBuilder {
     func createMyLocationsModule() -> UIViewController {
         let view = MyLocationsViewController()
         
+        let viewModel = MyLocationsViewModelImpl(weatherService: di.weatherAPIService)
+        view.viewModel = viewModel
+        
         return view
     }
 }

@@ -17,5 +17,10 @@ extension UIViewController {
         actions.forEach { alert.addAction($0) }
         present(alert, animated: true)
     }
+    
+    func changeNavigationTitle(to title: String, tabBarItemTitle: String? = nil) {
+        self.title = title
+        navigationController?.tabBarItem.title = tabBarItemTitle ?? title
+    }
 }
 

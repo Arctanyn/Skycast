@@ -55,11 +55,13 @@ final class MainTabBarController: UITabBarController {
 
 private extension MainTabBarController {
     func configureAppearance() {
-        tabBar.tintColor = .white
+        tabBar.tintColor = Resources.Colors.blue
+        tabBar.isTranslucent = false
+        tabBar.backgroundColor = Resources.Colors.grayBlue
+        tabBar.barTintColor = Resources.Colors.grayBlue
     }
     
     func setupNavigationController(_ navigationController: UINavigationController, title: String, tabBarIcon: UIImage?, tabBarSelectedIcon: UIImage? = nil) {
-        navigationController.title = title
         navigationController.tabBarItem.title = title
         navigationController.tabBarItem.image = tabBarIcon
         navigationController.tabBarItem.selectedImage = tabBarSelectedIcon

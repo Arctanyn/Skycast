@@ -9,6 +9,7 @@ import Foundation
 
 enum WeatherAPIRoute {
     case forecast
+    case search
     
     var apiVersion: String { "v1" }
     
@@ -16,6 +17,8 @@ enum WeatherAPIRoute {
         switch self {
         case .forecast:
             return "/\(apiVersion)/forecast.json"
+        case .search:
+            return "/\(apiVersion)/search.json"
         }
     }
 }

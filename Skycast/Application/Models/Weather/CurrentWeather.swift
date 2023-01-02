@@ -10,7 +10,8 @@ import Foundation
 struct CurrentWeather: Decodable {
     let lastUpdatedEpoch: Int?
     let lastUpdated: String?
-    let tempC, tempF: Double?
+    let tempC: Double?
+    let tempF: Double?
     let isDay: Int?
     let condition: Condition?
     let windMph: Double?
@@ -23,11 +24,13 @@ struct CurrentWeather: Decodable {
     let cloud: Int?
     let precipMm: Double?
     let precipIn: Double?
-    let feelslikeC, feelslikeF: Double?
+    let feelslikeC: Double?
+    let feelslikeF: Double?
     let visKM: Double?
     let visMiles: Double?
     let uv: Double?
-    let gustMph, gustKph: Double?
+    let gustMph: Double?
+    let gustKph: Double?
 
     enum CodingKeys: String, CodingKey {
         case lastUpdatedEpoch = "last_updated_epoch"
@@ -54,10 +57,4 @@ struct CurrentWeather: Decodable {
         case gustMph = "gust_mph"
         case gustKph = "gust_kph"
     }
-}
-
-struct Condition: Decodable {
-    let text: String?
-    let icon: String?
-    let code: Int?
 }

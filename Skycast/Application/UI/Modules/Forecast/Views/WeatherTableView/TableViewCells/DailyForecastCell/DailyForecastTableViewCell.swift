@@ -39,6 +39,11 @@ final class DailyForecastTableViewCell: BaseTableViewCell, ViewModelable {
     }
     
     private var cancellables = Set<AnyCancellable>()
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        changeLabelsColor(to: .label)
+    }
     
     //MARK: - Views
     

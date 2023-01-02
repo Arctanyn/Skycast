@@ -16,6 +16,7 @@ enum Resources {
         static var background: UIColor { UIColor(named: "background")! }
         static var title: UIColor { .tertiaryLabel.withAlphaComponent(0.8) }
         static var darkText: UIColor { .tertiaryLabel.withAlphaComponent(1) }
+        static var grayBlue: UIColor { UIColor(hexString: "#252C4E") }
         static var blue: UIColor { .systemBlue }
     }
     

@@ -1,5 +1,5 @@
 //
-//  WeatherTemperatureViewModelImpl.swift
+//  LowHighWeatherTemperaturesViewModelImpl.swift
 //  Skycast
 //
 //  Created by Малиль Дугулюбгов on 20.12.2022.
@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-final class WeatherTemperatureViewModelImpl: WeatherTemperatureViewModel {
+final class LowHighWeatherTemperaturesViewModelImpl: LowHighWeatherTemperaturesViewModel {
     
     //MARK: Properties
     

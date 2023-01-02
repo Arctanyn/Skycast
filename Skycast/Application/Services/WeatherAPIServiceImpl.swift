@@ -11,6 +11,17 @@ import Combine
 
 final class WeatherAPIServiceImpl: WeatherAPIService {
     
+    enum URLError: LocalizedError {
+        case invalidURL
+        
+        var errorDescription: String? {
+            switch self {
+            case .invalidURL:
+                return "Invalid address of the requested resource"
+            }
+        }
+    }
+    
     //MARK: Properties
     
     private let session = URLSession.shared
@@ -31,57 +42,63 @@ final class WeatherAPIServiceImpl: WeatherAPIService {
     
     //MARK: - Methods
     
-    func getWeather(route: WeatherAPIRoute, for location: CLLocation) -> AnyPublisher<Weather, HTTPError> {
+    func getForecast(for location: CLLocationCoordinate2D) throws -> AnyPublisher<Weather, HTTPError> {
+        try getForecast(latitude: location.latitude, longitude: location.longitude)
+    }
+    
+    func getForecast(latitude: CLLocationDegrees, longitude: CLLocationDegrees) throws -> AnyPublisher<Weather, HTTPError> {
         guard let url = service.createURL(
             scheme: WeatherHTTPBase.scheme,
             host: WeatherHTTPBase.host,
-            path: route.path,
-            queryParameters: prepareForecastQueryParameters(coordinate: location.coordinate, days: 3)
+            path: WeatherAPIRoute.forecast.path,
+            queryParameters: prepareForecastQueryParameters(coordinate: (latitude, longitude), days: 3)
         ) else {
-            fatalError("Invalid parameters for creating an adress")
+            throw URLError.invalidURL
+        }
+                        
+        return createNetworkCallPublisher(withOutputType: Weather.self, url: url)
+    }
+    
+    func searchCity(query: String) throws -> AnyPublisher<[City], HTTPError> {
+        guard let url = service.createURL(
+            scheme: WeatherHTTPBase.scheme,
+            host: WeatherHTTPBase.host,
+            path: WeatherAPIRoute.search.path,
+            queryParameters: prepareSearchQueryParameters(query: query)
+        ) else {
+            throw URLError.invalidURL
         }
         
-        return session.dataTaskPublisher(for: url)
-            .tryMap { data, response in
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    throw HTTPError.nonHTTPRequest
-                }
-                
-                let statusCode = httpResponse.statusCode
-                
-                if case (400..<500) = statusCode {
-                    throw HTTPError.requestFailed(statusCode: statusCode)
-                } else if case (500..<600) = statusCode {
-                    throw HTTPError.serverError(statusCode: statusCode)
-                }
-                
-                return data
-            }
-            .decode(type: Weather.self, decoder: decoder)
-            .mapError { error in
-                switch error {
-                case is HTTPError:
-                    return error as! HTTPError
-                case is DecodingError:
-                    return HTTPError.decodingError(error as! DecodingError)
-                default:
-                    return HTTPError.networkError(error)
-                }
-            }
-            .eraseToAnyPublisher()
+        return createNetworkCallPublisher(withOutputType: [City].self, url: url)
     }
 }
 
 //MARK: - Private methods
 
 private extension WeatherAPIServiceImpl {
-    func prepareForecastQueryParameters(coordinate: CLLocationCoordinate2D, days: Int) -> [String: String] {
-        let parameters = [
+    func createNetworkCallPublisher<T: Decodable>(withOutputType outputType: T.Type, url: URL) -> AnyPublisher<T, HTTPError> {
+        session.dataTaskPublisher(for: url)
+            .assumeHTTP()
+            .map { $0.data }
+            .decode(type: outputType.self, decoder: decoder)
+            .mapHTTPError()
+            .eraseToAnyPublisher()
+    }
+    
+    func prepareForecastQueryParameters(coordinate: (latitude: CLLocationDegrees, longitude: CLLocationDegrees),
+                                        days: Int) -> [String: String] {
+        return [
             "q": "\(coordinate.latitude) \(coordinate.longitude)",
             "key": accessKey,
             "days": String(days),
             "aqi": "yes",
         ]
-        return parameters
+    }
+    
+    func prepareSearchQueryParameters(query: String) -> [String: String] {
+        return [
+            "q": query,
+            "key": accessKey
+        ]
     }
 }

@@ -42,7 +42,6 @@ final class DailyForecastHeaderView: BaseView {
             labelsHStack.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
             labelsHStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
             labelsHStack.bottomAnchor.constraint(equalTo: bottomAnchor),
-            labelsHStack.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor)
         ])
     }
 }

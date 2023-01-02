@@ -1,5 +1,5 @@
 //
-//  WeatherTemperatureView.swift
+//  LowHighWeatherTemperaturesView.swift
 //  Skycast
 //
 //  Created by Малиль Дугулюбгов on 18.12.2022.
@@ -8,9 +8,9 @@
 import UIKit
 import Combine
 
-final class WeatherTemperatureView: BaseView, ViewModelable {
+final class LowHighWeatherTemperaturesView: BaseView, ViewModelable {
     
-    typealias ViewModel = WeatherTemperatureViewModel
+    typealias ViewModel = LowHighWeatherTemperaturesViewModel
     
     //MARK: Properties
     
@@ -60,7 +60,7 @@ final class WeatherTemperatureView: BaseView, ViewModelable {
 
 //MARK: - Private methods
 
-private extension WeatherTemperatureView {
+private extension LowHighWeatherTemperaturesView {
     func setupTemperatureView<P: Publisher>(_ view: TemperatureView, withPublisher publisher: P) where P.Output == Temperature, P.Failure == Never {
         publisher
             .sink { view.setupViews(withTemperature: $0) }
