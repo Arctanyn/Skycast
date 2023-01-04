@@ -27,6 +27,10 @@ enum Resources {
             UIImage(systemName: "location.fill")!
         }
         
+        static var trash: UIImage {
+            UIImage(systemName: "trash")!
+        }
+        
         //MARK: - Weather
         
         enum Weather {

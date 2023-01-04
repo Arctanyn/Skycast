@@ -9,7 +9,8 @@ import Foundation
 
 protocol CoordinatorsFactory {
     func createApplicationCoordinator(router: Router) -> ApplicationCoordinator
-    func createForecastCoordinator(router: Router) -> ForecastCoordinatorImpl
-    func createMyLocationsCoordinator(router: Router) -> MyLocationsCoordinatorImpl
-    func createLocationForecastCoordinator(router: Router) -> LocationForecastCoordinatorImpl
+    func createForecastCoordinator(router: Router) -> CurrentLocationForecastCoordinator
+    func createMyLocationsCoordinator(router: Router) -> MyLocationsCoordinator
+    func createLocationForecastCoordinator(router: Router) -> LocationForecastCoordinator
+    func createSavedLocationForecastCoordinator(router: Router) -> SavedLocationForecastCoordinator
 }

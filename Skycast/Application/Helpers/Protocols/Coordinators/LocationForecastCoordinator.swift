@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol LocationForecastCoordinator: AnyObject {
-    func finishCurrentFlow()
+protocol LocationForecastCoordinator: Coordinator {
+    var finishFlow: VoidClosure? { get set }
     func dismissModule()
 }

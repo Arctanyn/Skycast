@@ -1,5 +1,5 @@
 //
-//  ForecastViewModelImpl.swift
+//  CurrentLocationForecastViewModelImpl.swift
 //  Skycast
 //
 //  Created by Малиль Дугулюбгов on 17.12.2022.
@@ -9,7 +9,7 @@ import Foundation
 import CoreLocation
 import Combine
 
-final class ForecastViewModelImpl: ForecastViewModel {
+final class CurrentLocationForecastViewModelImpl: CurrentLocationForecastViewModel {
 
     //MARK: Properties
     
@@ -59,7 +59,7 @@ final class ForecastViewModelImpl: ForecastViewModel {
 
 //MARK: - Private methods
 
-private extension ForecastViewModelImpl {
+private extension CurrentLocationForecastViewModelImpl {
     func setBindings() {
         locationManager.locationPublisher
             .sink { [weak self] location in

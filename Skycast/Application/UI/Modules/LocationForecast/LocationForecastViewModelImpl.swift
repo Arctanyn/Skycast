@@ -13,6 +13,10 @@ final class LocationForecastViewModelImpl: LocationForecastViewModel {
     @Published private var isLoading = true
     @Published private var isResieved = false
     
+    var isCityInMyLocations: Bool {
+        UserDefaults.standard.fetchCities()?.contains(city) ?? false
+    }
+    
     var weatherRecievedPublisher: AnyPublisher<Bool, Never> {
         $isResieved.eraseToAnyPublisher()
     }
@@ -48,7 +52,7 @@ final class LocationForecastViewModelImpl: LocationForecastViewModel {
     }
     
     func moduleWillDisappear() {
-        coordinator.finishCurrentFlow()
+        coordinator.finishFlow?()
     }
     
     func dismissPage() {
@@ -64,6 +68,7 @@ private extension LocationForecastViewModelImpl {
             let weatherForecast = try weatherService.getForecast(coordinate: coordinate)
             
             weatherForecast
+                .receive(on: DispatchQueue.main)
                 .sink { [weak self] completion in
                     if case .failure(let error) = completion {
                         self?.isResieved = false

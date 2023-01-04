@@ -17,23 +17,8 @@ class MyLocationsViewController: BaseViewController, ViewModelable {
     var viewModel: ViewModel! {
         didSet {
             setupSearchResultsController()
-            
-            viewModel.searchResultsUpdatingPublisher
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] cities in
-                    guard
-                        let locationSearchResultsController = self?.locationsSearchController.searchResultsController as? LocationsSearchResultsController,
-                        let rearchResultsViewModel = locationSearchResultsController.viewModel
-                    else { return }
-                    rearchResultsViewModel.updateResults(with: cities)
-                }
-                .store(in: &cancellables)
-            
-            viewModel.addingNewLocationPublisher
-                .sink { [weak self] index in
-                    self?.locationsCollectionView.insertItems(at: [IndexPath(item: index, section: 0)])
-                }
-                .store(in: &cancellables)
+            setBindings()
+            locationsCollectionView.reloadData()
         }
     }
     
@@ -119,6 +104,31 @@ private extension MyLocationsViewController {
         navigationItem.searchController = locationsSearchController
     }
     
+    func setBindings() {
+        viewModel.searchResultsUpdatingPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] cities in
+                guard
+                    let locationSearchResultsController = self?.locationsSearchController.searchResultsController as? LocationsSearchResultsController,
+                    let rearchResultsViewModel = locationSearchResultsController.viewModel
+                else { return }
+                rearchResultsViewModel.updateResults(with: cities)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.addingNewLocationPublisher
+            .sink { [weak self] index in
+                self?.locationsCollectionView.insertItems(at: [IndexPath(item: index, section: 0)])
+            }
+            .store(in: &cancellables)
+        
+        viewModel.removingLocationPublisher
+            .sink { [weak self] index in
+                self?.locationsCollectionView.deleteItems(at: [IndexPath(item: index, section: 0)])
+            }
+            .store(in: &cancellables)
+    }
+    
     func setLocalBindings() {
         NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification, object: locationsSearchController.searchBar.searchTextField)
             .compactMap { ($0.object as? UISearchTextField)?.text }
@@ -148,5 +158,22 @@ extension MyLocationsViewController: UICollectionViewDataSource, UICollectionVie
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LocationCollectionViewCell.identifier, for: indexPath) as! LocationCollectionViewCell
         cell.viewModel = viewModel.viewModelForCell(at: indexPath)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard
+            let cell = collectionView.cellForItem(at: indexPath) as? LocationCollectionViewCell,
+            cell.isWeatherRecieved
+        else { return }
+        viewModel.showForecastForLocation(with: cell.viewModel.locationWeather)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(actionProvider: { [weak self] _ in
+            let deleteAction = UIAction(title: "Remove from my locations", image: Resources.Images.trash, attributes: .destructive) { _ in
+                self?.viewModel.removeLocation(at: indexPath)
+            }
+            return UIMenu(children: [deleteAction])
+        })
     }
 }

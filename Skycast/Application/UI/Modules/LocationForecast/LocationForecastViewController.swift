@@ -17,17 +17,17 @@ final class LocationForecastViewController: BaseViewController, ViewModelable {
     var viewModel: ViewModel! {
         didSet {
             viewModel.weatherRecievedPublisher
-                .receive(on: DispatchQueue.main)
                 .sink { [weak self] isRecieved in
                     self?.updateInterface(isRecievedWeather: isRecieved)
                 }
                 .store(in: &cancellables)
             
+            addButton.isHidden = viewModel.isCityInMyLocations
             viewModel.getWeatherForecast()
         }
     }
     
-    private var forecastViewTopConsatraint: NSLayoutConstraint!
+    private var forecastViewTopConstraint: NSLayoutConstraint!
     private var cancellables = Set<AnyCancellable>()
     
     //MARK: - Views
@@ -70,10 +70,10 @@ final class LocationForecastViewController: BaseViewController, ViewModelable {
     }
     
     override func constraintViews() {
-        forecastViewTopConsatraint = forecastView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: view.bounds.width * 0.7)
+        forecastViewTopConstraint = forecastView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: view.bounds.width * 0.7)
         
         NSLayoutConstraint.activate([
-            forecastViewTopConsatraint,
+            forecastViewTopConstraint,
             forecastView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             forecastView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             forecastView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -99,9 +99,9 @@ private extension LocationForecastViewController {
     func updateInterface(isRecievedWeather: Bool) {
         if isRecievedWeather {
             forecastView.viewModel = viewModel.viewModelForWeatherForecastView()
-            animateViewAttachmentToTopWithAppearance(
+            animateViewAttachmentWithAppearance(
                 forecastView,
-                topConstraint: forecastViewTopConsatraint
+                topConstraint: forecastViewTopConstraint
             )
         } else {
             forecastView.alpha = 0

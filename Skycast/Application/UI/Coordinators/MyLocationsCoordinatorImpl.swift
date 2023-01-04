@@ -32,13 +32,21 @@ final class MyLocationsCoordinatorImpl: BaseCoordinator, MyLocationsCoordinator 
         router.setRootModule(module, hideBar: false)
     }
     
-    func showForecastForLocation(with city: City) {
+    func showForecastForSearchResult(with city: City) {
         let coordinator = coordinatorsFactory.createLocationForecastCoordinator(router: router)
-        
         coordinator.finishFlow = { [weak self] in
-            self?.childDidFinish(coordinator)
+            self?.childDidFinish(coordinator as Coordinator)
         }
         coordinator.start(with: city)
     }
+    
+    func showForecastForCity(with weather: Weather?) {
+        let coordinator = coordinatorsFactory.createSavedLocationForecastCoordinator(router: router)
+        coordinator.finishFlow = { [weak self] in
+            self?.childDidFinish(coordinator as Coordinator)
+        }
+        coordinator.start(with: weather)
+    }
+    
 
 }

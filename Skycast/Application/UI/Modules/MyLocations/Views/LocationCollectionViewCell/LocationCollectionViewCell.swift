@@ -17,11 +17,11 @@ class LocationCollectionViewCell: BaseCollectionViewCell, ViewModelable {
     var viewModel: ViewModel! {
         didSet {
             setBindings()
-            viewModel.getWeather()
         }
     }
     
-    private var cacellables = Set<AnyCancellable>()
+    var isWeatherRecieved = false
+    private var cancellables = Set<AnyCancellable>()
     
     //MARK: - Views
     
@@ -44,7 +44,7 @@ class LocationCollectionViewCell: BaseCollectionViewCell, ViewModelable {
     private lazy var lowHighTemperatureHStack = UIStackView(
         axis: .horizontal,
         spacing: 10,
-        arrangedSubviews: [highTemperatureLabel, lowTemperatureLabel]
+        arrangedSubviews: [lowTemperatureLabel, highTemperatureLabel]
     )
     
     private lazy var locationLabel = UILabel(
@@ -93,7 +93,7 @@ class LocationCollectionViewCell: BaseCollectionViewCell, ViewModelable {
     }
     
     override func constraintViews() {
-        highTemperatureLabel.setContentHuggingPriority(.required, for: .horizontal)
+        lowTemperatureLabel.setContentHuggingPriority(.required, for: .horizontal)
         NSLayoutConstraint.activate([
             locationLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             locationLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
@@ -114,14 +114,23 @@ class LocationCollectionViewCell: BaseCollectionViewCell, ViewModelable {
 
 private extension LocationCollectionViewCell {
     func setBindings() {
+        viewModel.weatherRecievedPublisher
+            .sink { [weak self] isRecieved in
+                self?.isWeatherRecieved = isRecieved
+                if !isRecieved {
+                    self?.viewModel.getWeather()
+                }
+            }
+            .store(in: &cancellables)
+        
         viewModel.temperaturePublisher
             .map { $0.stringFormat }
             .assignToTextOnLabel(temperatureLabel)
-            .store(in: &cacellables)
+            .store(in: &cancellables)
         
         viewModel.locationNamePublisher
             .assignToTextOnLabel(locationLabel)
-            .store(in: &cacellables)
+            .store(in: &cancellables)
         
         viewModel.weatherIconPublisher
             .sink { [weak self] code, dayPeriod in
@@ -130,25 +139,25 @@ private extension LocationCollectionViewCell {
                     dayPriod: dayPeriod
                 )
             }
-            .store(in: &cacellables)
+            .store(in: &cancellables)
         
         viewModel.lowTemperaturePublisher
             .map { $0.stringFormat }
             .sink { [weak self] in
                 self?.lowTemperatureLabel.text = "L: \($0)"
             }
-            .store(in: &cacellables)
+            .store(in: &cancellables)
         
         viewModel.highTemperaturePublisher
             .map { $0.stringFormat }
             .sink { [weak self] in
                 self?.highTemperatureLabel.text = "H: \($0)"
             }
-            .store(in: &cacellables)
+            .store(in: &cancellables)
         
         viewModel.conditionPublisher
             .assignToTextOnLabel(conditionLabel)
-            .store(in: &cacellables)
+            .store(in: &cancellables)
     }
     
     func addShadow() {

@@ -13,13 +13,12 @@ final class MyLocationsViewModelImpl: MyLocationsViewModel {
     //MARK: Properties
     
     var numberOfLocations: Int {
-        myLocations.count
+        locations.count
     }
     
     @Published private var searchResults = [City]()
     @Published private var temperatureUnits: TemperatureUnits = .celsius
-    
-    private var myLocations: [City] = []
+    @Published private var locations = UserDefaults.standard.fetchCities() ?? []
     
     var searchResultsUpdatingPublisher: AnyPublisher<[City], Never> {
         $searchResults.eraseToAnyPublisher()
@@ -29,7 +28,12 @@ final class MyLocationsViewModelImpl: MyLocationsViewModel {
         addingNewLocationSubject.eraseToAnyPublisher()
     }
     
+    var removingLocationPublisher: AnyPublisher<Int, Never> {
+        removingLocationSubject.eraseToAnyPublisher()
+    }
+    
     private let addingNewLocationSubject = PassthroughSubject<Int, Never>()
+    private let removingLocationSubject = PassthroughSubject<Int, Never>()
         
     private var cancellables = Set<AnyCancellable>()
     private let weatherService: WeatherAPIService
@@ -40,18 +44,7 @@ final class MyLocationsViewModelImpl: MyLocationsViewModel {
     init(weatherService: WeatherAPIService, coordinator: MyLocationsCoordinator) {
         self.weatherService = weatherService
         self.coordinator = coordinator
-        
-        NotificationCenter.default.publisher(for: .addCityToMyLocation)
-            .sink { [weak self] notification in
-                guard
-                    let self,
-                    let city = notification.object as? City,
-                    !(self.myLocations.contains { $0 == city })
-                else { return }
-                self.myLocations.append(city)
-                self.addingNewLocationSubject.send(self.numberOfLocations - 1)
-            }
-            .store(in: &cancellables)
+        setBindings()
     }
     
     //MARK: - Methods
@@ -80,9 +73,41 @@ final class MyLocationsViewModelImpl: MyLocationsViewModel {
     
     func viewModelForCell(at indexPath: IndexPath) -> LocationCollectionViewCellViewModel {
         return LocationCollectionViewCellViewModelImpl(
-            city: myLocations[indexPath.item],
+            city: locations[indexPath.item],
             apiService: weatherService,
             temperatureUnits: temperatureUnits
         )
+    }
+    
+    func showForecastForLocation(with weather: Weather?) {
+        coordinator.showForecastForCity(with: weather)
+    }
+    
+    func removeLocation(at indexPath: IndexPath) {
+        let index = indexPath.item
+        locations.remove(at: index)
+        removingLocationSubject.send(index)
+    }
+}
+
+//MARK: - Private methods
+
+private extension MyLocationsViewModelImpl {
+    func setBindings() {
+        $locations
+            .sink { UserDefaults.standard.saveCities($0) }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: .addCityToMyLocation)
+            .sink { [weak self] notification in
+                guard
+                    let self,
+                    let city = notification.object as? City,
+                    !(self.locations.contains { $0 == city })
+                else { return }
+                self.locations.append(city)
+                self.addingNewLocationSubject.send(self.numberOfLocations - 1)
+            }
+            .store(in: &cancellables)
     }
 }

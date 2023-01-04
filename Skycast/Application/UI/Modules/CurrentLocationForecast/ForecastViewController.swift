@@ -1,5 +1,5 @@
 //
-//  ForecastViewController.swift
+//  CurrentLocationForecastViewController.swift
 //  Skycast
 //
 //  Created by Малиль Дугулюбгов on 16.12.2022.
@@ -8,9 +8,9 @@
 import UIKit
 import Combine
 
-final class ForecastViewController: BaseViewController, ViewModelable {
+final class CurrentLocationForecastViewController: BaseViewController, ViewModelable {
     
-    typealias ViewModel = ForecastViewModel
+    typealias ViewModel = CurrentLocationForecastViewModel
     
     //MARK: Properties
     
@@ -81,7 +81,7 @@ final class ForecastViewController: BaseViewController, ViewModelable {
 
 //MARK: - Actions
 
-@objc private extension ForecastViewController {
+@objc private extension CurrentLocationForecastViewController {
     func messageViewActionButtonTapped() {
         messageView.isHidden = true
         viewModel.updateLocation()
@@ -90,7 +90,7 @@ final class ForecastViewController: BaseViewController, ViewModelable {
 
 //MARK: - Private methods
 
-private extension ForecastViewController {
+private extension CurrentLocationForecastViewController {
     func setBindings() {
         viewModel.weatherRecievedPublisher
             .sink { [weak self] isRecieved in
@@ -122,7 +122,7 @@ private extension ForecastViewController {
     func updateInterface(isRecievedWeather: Bool) {
         if isRecievedWeather {
             forecastView.viewModel = viewModel.viewModelForWeatherForecastView()
-            animateViewAttachmentToTopWithAppearance(
+            animateViewAttachmentWithAppearance(
                 forecastView,
                 topConstraint: forecastViewTopConsatraint
             )

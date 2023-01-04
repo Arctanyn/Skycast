@@ -1,13 +1,13 @@
 //
-//  LocationForecastCoordinatorImpl.swift
+//  SavedLocationForecastCoordinatorImpl.swift
 //  Skycast
 //
-//  Created by Малиль Дугулюбгов on 02.01.2023.
+//  Created by Малиль Дугулюбгов on 04.01.2023.
 //
 
 import Foundation
 
-final class LocationForecastCoordinatorImpl: BaseCoordinator, LocationForecastCoordinator {
+final class SavedLocationForecastCoordinatorImpl: BaseCoordinator, SavedLocationForecastCoordinator {
 
     //MARK: Properties
     
@@ -26,13 +26,13 @@ final class LocationForecastCoordinatorImpl: BaseCoordinator, LocationForecastCo
     //MARK: - Methods
     
     override func start(with item: Any?) {
-        guard let city = item as? City else { return }
-        let module = assemblyBuilder.createLocationForecastModule(city: city, coordinator: self)
-        router.presentInNavigation(module, animated: true)
+        guard let weather = item as? Weather? else { return }
+        let module = assemblyBuilder.createSavedLocationWeatherForecastModule(weather: weather, coordinator: self)
+        router.push(module, animated: true)
     }
-
-    func dismissModule() {
+    
+    func finishCurrentFlow() {
         finishFlow?()
-        router.dismiss(animated: true)
     }
+    
 }

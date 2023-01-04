@@ -25,15 +25,19 @@ final class CoordinatorsFactoryImpl: CoordinatorsFactory {
         return ApplicationCoordinator(assemblyBuilder: assemblyBuilder, coordinatorsFactory: self, router: router)
     }
     
-    func createForecastCoordinator(router: Router) -> ForecastCoordinatorImpl {
-        return ForecastCoordinatorImpl(assemblyBuilder: assemblyBuilder, coordinatorsFactory: self, router: router)
+    func createForecastCoordinator(router: Router) -> CurrentLocationForecastCoordinator {
+        return CurrentLocationForecastCoordinatorImpl(assemblyBuilder: assemblyBuilder, coordinatorsFactory: self, router: router)
     }
 
-    func createMyLocationsCoordinator(router: Router) -> MyLocationsCoordinatorImpl {
+    func createMyLocationsCoordinator(router: Router) -> MyLocationsCoordinator {
         return MyLocationsCoordinatorImpl(assemblyBuilder: assemblyBuilder, coordinatorsFactory: self, router: router)
     }
     
-    func createLocationForecastCoordinator(router: Router) -> LocationForecastCoordinatorImpl {
+    func createLocationForecastCoordinator(router: Router) -> LocationForecastCoordinator {
         return LocationForecastCoordinatorImpl(assemblyBuilder: assemblyBuilder, router: router)
+    }
+    
+    func createSavedLocationForecastCoordinator(router: Router) -> SavedLocationForecastCoordinator {
+        return SavedLocationForecastCoordinatorImpl(assemblyBuilder: assemblyBuilder, router: router)
     }
 }

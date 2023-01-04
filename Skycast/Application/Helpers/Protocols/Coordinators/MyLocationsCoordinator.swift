@@ -7,6 +7,8 @@
 
 import Foundation
 
-protocol MyLocationsCoordinator: AnyObject {
-    func showForecastForLocation(with city: City)
+protocol MyLocationsCoordinator: Coordinator {
+    var finishFlow: VoidClosure? { get set }
+    func showForecastForSearchResult(with city: City)
+    func showForecastForCity(with weather: Weather?)
 }

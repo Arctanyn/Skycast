@@ -9,6 +9,7 @@ import Foundation
 import Combine
 
 protocol LocationForecastViewModel {
+    var isCityInMyLocations: Bool { get }
     var weatherRecievedPublisher: AnyPublisher<Bool, Never> { get }
     func viewModelForWeatherForecastView() -> ForecastViewViewModel
     func getWeatherForecast()

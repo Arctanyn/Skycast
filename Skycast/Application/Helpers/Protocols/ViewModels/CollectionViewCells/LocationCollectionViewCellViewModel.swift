@@ -9,6 +9,8 @@ import Foundation
 import Combine
 
 protocol LocationCollectionViewCellViewModel {
+    var locationWeather: Weather? { get }
+    var weatherRecievedPublisher: AnyPublisher<Bool, Never> { get }
     var locationNamePublisher: AnyPublisher<String, Never> { get }
     var temperaturePublisher: AnyPublisher<Temperature, Never> { get }
     var conditionPublisher: AnyPublisher<String, Never> { get }

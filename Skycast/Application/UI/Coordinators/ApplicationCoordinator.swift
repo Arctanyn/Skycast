@@ -58,7 +58,7 @@ final class ApplicationCoordinator: BaseCoordinator {
             let coordinator = coordinatorsFactory.createMyLocationsCoordinator(router: router)
             
             coordinator.finishFlow = { [weak self] in
-                self?.childDidFinish(coordinator)
+                self?.childDidFinish(coordinator as Coordinator)
             }
             addChild(coordinator)
         }

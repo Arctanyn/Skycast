@@ -15,10 +15,10 @@ final class AssemblyBuilderImpl: AssemblyBuilder {
     
     //MARK: - Methods
     
-    func createForecastModule() -> UIViewController {
-        let view = ForecastViewController()
+    func createCurrentLocationForecastModule() -> UIViewController {
+        let view = CurrentLocationForecastViewController()
 
-        let viewModel = ForecastViewModelImpl(
+        let viewModel = CurrentLocationForecastViewModelImpl(
             locationManager: di.userLocationManager,
             weatherService: di.weatherAPIService
         )
@@ -43,6 +43,18 @@ final class AssemblyBuilderImpl: AssemblyBuilder {
             city: city,
             weatherService: di.weatherAPIService,
             coodinator: coordinator
+        )
+        view.viewModel = viewModel
+        
+        return view
+    }
+    
+    func createSavedLocationWeatherForecastModule(weather: Weather?, coordinator: SavedLocationForecastCoordinator) -> UIViewController {
+        let view = SavedLocationForecastViewController()
+        
+        let viewModel = SavedLocationWeatherViewModelImpl(
+            weather: weather,
+            coordinator: coordinator
         )
         view.viewModel = viewModel
         

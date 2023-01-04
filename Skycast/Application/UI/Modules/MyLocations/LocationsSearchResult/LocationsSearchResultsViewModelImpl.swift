@@ -77,7 +77,7 @@ private extension LocationsSearchResultsViewModelImpl {
                 self?.cities[indexPath.row]
             }
             .sink { [weak self] city in
-                self?.coordinator.showForecastForLocation(with: city)
+                self?.coordinator.showForecastForSearchResult(with: city)
             }
             .store(in: &cancellables)
         

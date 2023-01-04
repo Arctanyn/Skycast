@@ -15,11 +15,18 @@ final class LocationCollectionViewCellViewModelImpl: LocationCollectionViewCellV
     @Published private var city: City
     @Published private var weather: Weather?
     @Published private var temperatureUnits: TemperatureUnits
+    @Published private var isWeatherRecieved = false
 
     var locationNamePublisher: AnyPublisher<String, Never> {
         $city
             .compactMap { $0.name }
             .eraseToAnyPublisher()
+    }
+    
+    var locationWeather: Weather? { weather }
+    
+    var weatherRecievedPublisher: AnyPublisher<Bool, Never> {
+        $isWeatherRecieved.eraseToAnyPublisher()
     }
     
     var temperaturePublisher: AnyPublisher<Temperature, Never> {
@@ -99,10 +106,12 @@ final class LocationCollectionViewCellViewModelImpl: LocationCollectionViewCellV
                 .receive(on: DispatchQueue.main)
                 .sink { completion in
                     if case .failure(let error) = completion {
-                        print(error)
+                        print(error.localizedDescription)
+                        self.isWeatherRecieved = false
                     }
                 } receiveValue: { [weak self] weather in
                     self?.weather = weather
+                    self?.isWeatherRecieved = true
                 }
                 .store(in: &cancellables)
         } catch {

@@ -8,7 +8,8 @@
 import UIKit
 
 protocol AssemblyBuilder {
-    func createForecastModule() -> UIViewController
+    func createCurrentLocationForecastModule() -> UIViewController
     func createMyLocationsModule(coordinator: MyLocationsCoordinator) -> UIViewController
     func createLocationForecastModule(city: City, coordinator: LocationForecastCoordinator) -> UIViewController
+    func createSavedLocationWeatherForecastModule(weather: Weather?, coordinator: SavedLocationForecastCoordinator) -> UIViewController
 }

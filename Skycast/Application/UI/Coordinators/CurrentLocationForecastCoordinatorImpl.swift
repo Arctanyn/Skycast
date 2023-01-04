@@ -1,5 +1,5 @@
 //
-//  ForecastCoordinatorImpl.swift
+//  CurrentLocationForecastCoordinatorImpl.swift
 //  Skycast
 //
 //  Created by Малиль Дугулюбгов on 29.12.2022.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class ForecastCoordinatorImpl: BaseCoordinator {
+final class CurrentLocationForecastCoordinatorImpl: BaseCoordinator, CurrentLocationForecastCoordinator {
     
     //MARK: Properties
     
@@ -28,7 +28,7 @@ final class ForecastCoordinatorImpl: BaseCoordinator {
     //MARK: - Methods
     
     override func start(with item: Any?) {
-        router.setRootModule(assemblyBuilder.createForecastModule(), hideBar: true)
+        router.setRootModule(assemblyBuilder.createCurrentLocationForecastModule(), hideBar: true)
     }
 
 }
