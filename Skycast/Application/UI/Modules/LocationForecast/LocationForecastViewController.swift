@@ -85,7 +85,7 @@ final class LocationForecastViewController: BaseViewController, ViewModelable {
 
 @objc private extension LocationForecastViewController {
     func addButtonTapped() {
-        
+        viewModel.addCityToMyLocations()
     }
     
     func cancelButtonTapped() {

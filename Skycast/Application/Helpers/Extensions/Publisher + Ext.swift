@@ -8,6 +8,12 @@
 import UIKit
 import Combine
 
+enum TemperatureType {
+    case low
+    case high
+}
+
+
 extension Publisher {
     func assumeHTTP() -> AnyPublisher<(data: Data, httpResponse: HTTPURLResponse), Error> where Output == (data: Data, response: URLResponse), Failure == URLError {
         tryMap { data, response in
@@ -46,10 +52,10 @@ extension Publisher {
             .assign(to: \.text, on: label)
     }
     
-    func mapToTemperature(in units: TemperatureUnits) -> AnyPublisher<Temperature, Never> where Output == Int, Failure == Never {
-        map { Temperature(degrees: $0, units: units) }
-            .eraseToAnyPublisher()
-    }
+//    func mapToTemperature(in units: TemperatureUnits) -> AnyPublisher<Temperature, Never> where Output == Int, Failure == Never {
+//        map { Temperature(degrees: $0, units: units) }
+//            .eraseToAnyPublisher()
+//    }
     
     func compactMapToDayPeriod() -> AnyPublisher<DayPeriod, Never> where Output == Int, Failure == Never {
         compactMap {
@@ -57,5 +63,26 @@ extension Publisher {
         }
         .eraseToAnyPublisher()
     }
+    
+    func mapToTemperature(in units: TemperatureUnits) -> AnyPublisher<Temperature, Never> where Output == TemperatureConvertable, Failure == Never {
+        compactMap {
+            $0.getTemperature(in: units)
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    
+    func mapToTemperature(type: TemperatureType, in units: TemperatureUnits) -> AnyPublisher<Temperature, Never> where Output == Day, Failure == Never {
+        compactMap {
+            switch units {
+            case .celsius:
+                return (type == .low ? $0.mintempC : $0.maxtempC)?.convertToTemperature(in: units)
+            case .fahrenheit:
+                return (type == .low ? $0.mintempF : $0.maxtempF)?.convertToTemperature(in: units)
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
 }
 

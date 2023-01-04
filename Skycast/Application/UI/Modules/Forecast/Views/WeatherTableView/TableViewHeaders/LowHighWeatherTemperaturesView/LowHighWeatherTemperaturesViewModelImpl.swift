@@ -18,12 +18,11 @@ final class LowHighWeatherTemperaturesViewModelImpl: LowHighWeatherTemperaturesV
     var minTemperaturePublisher: AnyPublisher<Temperature, Never> {
         $day.combineLatest($temperatureUnits)
             .compactMap { day, units in
-                switch units {
-                case .celsius:
-                    return day?.mintempC?.convertToTemberature(in: units)
-                case .fahrenheit:
-                    return day?.mintempF?.convertToTemberature(in: units)
-                }
+                guard let day else { return nil }
+                return (day, units)
+            }
+            .flatMap { day, units in
+                Just(day).mapToTemperature(type: .low, in: units)
             }
             .eraseToAnyPublisher()
     }
@@ -31,12 +30,11 @@ final class LowHighWeatherTemperaturesViewModelImpl: LowHighWeatherTemperaturesV
     var maxTemperaturePublisher: AnyPublisher<Temperature, Never> {
         $day.combineLatest($temperatureUnits)
             .compactMap { day, units in
-                switch units {
-                case .celsius:
-                    return day?.maxtempC?.convertToTemberature(in: units)
-                case .fahrenheit:
-                    return day?.maxtempF?.convertToTemberature(in: units)
-                }
+                guard let day else { return nil }
+                return (day, units)
+            }
+            .flatMap { day, units in
+                Just(day).mapToTemperature(type: .high, in: units)
             }
             .eraseToAnyPublisher()
     }

@@ -28,6 +28,12 @@ class MyLocationsViewController: BaseViewController, ViewModelable {
                     rearchResultsViewModel.updateResults(with: cities)
                 }
                 .store(in: &cancellables)
+            
+            viewModel.addingNewLocationPublisher
+                .sink { [weak self] index in
+                    self?.locationsCollectionView.insertItems(at: [IndexPath(item: index, section: 0)])
+                }
+                .store(in: &cancellables)
         }
     }
     
@@ -135,11 +141,12 @@ private extension MyLocationsViewController {
 
 extension MyLocationsViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 0
+        viewModel.numberOfLocations
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LocationCollectionViewCell.identifier, for: indexPath) as! LocationCollectionViewCell
+        cell.viewModel = viewModel.viewModelForCell(at: indexPath)
         return cell
     }
 }

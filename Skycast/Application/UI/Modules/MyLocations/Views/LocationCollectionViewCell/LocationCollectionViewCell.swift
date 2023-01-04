@@ -6,21 +6,38 @@
 //
 
 import UIKit
+import Combine
 
-class LocationCollectionViewCell: BaseCollectionViewCell {
+class LocationCollectionViewCell: BaseCollectionViewCell, ViewModelable {
+    
+    typealias ViewModel = LocationCollectionViewCellViewModel
+    
+    //MARK: Properties
+    
+    var viewModel: ViewModel! {
+        didSet {
+            setBindings()
+            viewModel.getWeather()
+        }
+    }
+    
+    private var cacellables = Set<AnyCancellable>()
     
     //MARK: - Views
     
     private lazy var mainVStack = UIStackView(
         axis: .vertical,
-        spacing: 5,
-        distribution: .fillProportionally,
-        arrangedSubviews: [locationLabel, mainHStack, conditionLabel, lowHighTemperatureHStack]
+        spacing: 10,
+        arrangedSubviews: [
+            mainHStack,
+            conditionLabel,
+            lowHighTemperatureHStack
+        ]
     )
     
     private lazy var mainHStack = UIStackView(
         axis: .horizontal,
-        distribution: .fillProportionally,
+        spacing: 10,
         arrangedSubviews: [temperatureLabel, weatherIconImageView]
     )
     
@@ -31,37 +48,31 @@ class LocationCollectionViewCell: BaseCollectionViewCell {
     )
     
     private lazy var locationLabel = UILabel(
-        text: "London",
         font: Resources.Fonts.system(size: 19, weight: .bold)
     )
     
     private lazy var temperatureLabel = UILabel(
-        text: "-3ºC",
-        font: Resources.Fonts.system(size: 35, weight: .medium)
+        font: Resources.Fonts.system(size: 25, weight: .bold)
     )
     
-    private lazy var weatherIconImageView = UIImageView(image: Resources.Images.Weather.sun, tintColor: .white, contentMode: .scaleAspectFit)
+    private lazy var weatherIconImageView = UIImageView(contentMode: .scaleAspectFit)
     
     private lazy var conditionLabel = UILabel(
-        text: "Partly cloudy",
         textColor: .lightText,
         font: Resources.Fonts.system(size: 14, weight: .medium)
     )
     
     private lazy var lowTemperatureLabel = UILabel(
-        text: "L: -5º",
         textColor: Resources.Colors.darkText,
         font: Resources.Fonts.system(size: 14),
         textAlignment: .left
     )
     
     private lazy var highTemperatureLabel = UILabel(
-        text: "H: 2º",
         textColor: Resources.Colors.darkText,
         font: Resources.Fonts.system(size: 14),
         textAlignment: .left
     )
-    
     
     //MARK: - Layout
     
@@ -77,20 +88,24 @@ class LocationCollectionViewCell: BaseCollectionViewCell {
     }
     
     override func setupViews() {
+        contentView.addSubview(locationLabel, useAutoLayout: true)
         contentView.addSubview(mainVStack, useAutoLayout: true)
     }
     
     override func constraintViews() {
         highTemperatureLabel.setContentHuggingPriority(.required, for: .horizontal)
         NSLayoutConstraint.activate([
-            weatherIconImageView.heightAnchor.constraint(equalTo: temperatureLabel.heightAnchor),
-            weatherIconImageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.3),
+            locationLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            locationLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            locationLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
-            mainVStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            mainVStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            mainVStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            mainVStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+            weatherIconImageView.heightAnchor.constraint(equalToConstant: 35),
+            weatherIconImageView.widthAnchor.constraint(equalTo: weatherIconImageView.heightAnchor),
             
+            mainVStack.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 10),
+            mainVStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            mainVStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            mainVStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
         ])
     }
 }
@@ -98,6 +113,44 @@ class LocationCollectionViewCell: BaseCollectionViewCell {
 //MARK: - Private methods
 
 private extension LocationCollectionViewCell {
+    func setBindings() {
+        viewModel.temperaturePublisher
+            .map { $0.stringFormat }
+            .assignToTextOnLabel(temperatureLabel)
+            .store(in: &cacellables)
+        
+        viewModel.locationNamePublisher
+            .assignToTextOnLabel(locationLabel)
+            .store(in: &cacellables)
+        
+        viewModel.weatherIconPublisher
+            .sink { [weak self] code, dayPeriod in
+                self?.weatherIconImageView.image = Resources.Images.Weather.weatherIcon(
+                    code: code,
+                    dayPriod: dayPeriod
+                )
+            }
+            .store(in: &cacellables)
+        
+        viewModel.lowTemperaturePublisher
+            .map { $0.stringFormat }
+            .sink { [weak self] in
+                self?.lowTemperatureLabel.text = "L: \($0)"
+            }
+            .store(in: &cacellables)
+        
+        viewModel.highTemperaturePublisher
+            .map { $0.stringFormat }
+            .sink { [weak self] in
+                self?.highTemperatureLabel.text = "H: \($0)"
+            }
+            .store(in: &cacellables)
+        
+        viewModel.conditionPublisher
+            .assignToTextOnLabel(conditionLabel)
+            .store(in: &cacellables)
+    }
+    
     func addShadow() {
         layer.shadowRadius = 5
         layer.shadowOpacity = 0.6

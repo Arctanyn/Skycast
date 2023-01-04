@@ -42,8 +42,9 @@ final class LocationForecastViewModelImpl: LocationForecastViewModel {
         getForecastForLocation(with: coordinate)
     }
     
-    func addCityToMyLocation() {
-        
+    func addCityToMyLocations() {
+        NotificationCenter.default.post(name: .addCityToMyLocation, object: city)
+        dismissPage()
     }
     
     func moduleWillDisappear() {

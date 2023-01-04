@@ -80,5 +80,6 @@ private extension LocationsSearchResultsViewModelImpl {
                 self?.coordinator.showForecastForLocation(with: city)
             }
             .store(in: &cancellables)
+        
     }
 }

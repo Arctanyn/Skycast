@@ -36,26 +36,24 @@ final class DailyForecastCellViewModelImpl: DailyForecastCellViewModel {
     
     private var lowTemperaturePublisher: AnyPublisher<Temperature, Never> {
         $forecastDay.combineLatest($temperatureUnits)
-            .compactMap { weather, units in
-                switch units {
-                case .celsius:
-                    return weather?.day?.mintempC?.convertToTemberature(in: units)
-                case .fahrenheit:
-                    return weather?.day?.mintempF?.convertToTemberature(in: units)
-                }
+            .compactMap { forecastDay, units in
+                guard let day = forecastDay?.day else { return nil }
+                return (day, units)
+            }
+            .flatMap {
+                Just($0).mapToTemperature(type: .low, in: $1)
             }
             .eraseToAnyPublisher()
     }
     
     private var highTemperaturePublisher: AnyPublisher<Temperature, Never> {
         $forecastDay.combineLatest($temperatureUnits)
-            .compactMap { weather, units in
-                switch units {
-                case .celsius:
-                    return weather?.day?.maxtempC?.convertToTemberature(in: units)
-                case .fahrenheit:
-                    return weather?.day?.maxtempF?.convertToTemberature(in: units)
-                }
+            .compactMap { forecastDay, units in
+                guard let day = forecastDay?.day else { return nil }
+                return (day, units)
+            }
+            .flatMap {
+                Just($0).mapToTemperature(type: .high, in: $1)
             }
             .eraseToAnyPublisher()
     }

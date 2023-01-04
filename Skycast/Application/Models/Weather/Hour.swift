@@ -7,11 +7,14 @@
 
 import Foundation
 
-struct Hour: Decodable {
+struct Hour: Decodable, TemperatureConvertable {
+    var temperatureC: Double? { tempC }
+    var temperatureF: Double? { tempF }
+    
     let timeEpoch: Int?
     let time: String?
-    let tempC: Double?
-    let tempF: Double?
+    var tempC: Double?
+    var tempF: Double?
     let isDay: Int?
     let condition: Condition?
     let windMph: Double?

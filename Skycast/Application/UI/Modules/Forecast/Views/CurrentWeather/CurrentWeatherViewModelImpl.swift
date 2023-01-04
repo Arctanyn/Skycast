@@ -25,12 +25,11 @@ final class CurrentWeatherViewModelImpl: CurrentWeatherViewModel {
     var temperaturePublisher: AnyPublisher<Temperature, Never> {
         $weather.combineLatest($temperatureUnits)
             .compactMap { weather, units in
-                switch units {
-                case .celsius:
-                    return weather?.tempC?.convertToTemberature(in: units)
-                case .fahrenheit:
-                    return weather?.tempF?.convertToTemberature(in: units)
-                }
+                guard let weather else { return nil }
+                return (weather, units)
+            }
+            .flatMap { weather, units in
+                Just(weather).mapToTemperature(in: units)
             }
             .eraseToAnyPublisher()
     }

@@ -7,7 +7,10 @@
 
 import Foundation
 
-struct CurrentWeather: Decodable {
+struct CurrentWeather: Decodable, TemperatureConvertable {
+    var temperatureC: Double? { tempC }
+    var temperatureF: Double? { tempF }
+    
     let lastUpdatedEpoch: Int?
     let lastUpdated: String?
     let tempC: Double?

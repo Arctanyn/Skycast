@@ -17,12 +17,11 @@ final class HourlyForecastCellViewModelImpl: HourlyForecastCellViewModel {
     var temperaturePublisher: AnyPublisher<Temperature, Never> {
         $hour.combineLatest($temperatureUnits)
             .compactMap { hour, units in
-                switch units {
-                case .celsius:
-                    return hour?.tempC?.convertToTemberature(in: units)
-                case .fahrenheit:
-                    return hour?.tempF?.convertToTemberature(in: units)
-                }
+                guard let hour else { return nil }
+                return (hour, units)
+            }
+            .flatMap { hour, units in
+                Just(hour).mapToTemperature(in: units)
             }
             .eraseToAnyPublisher()
     }
