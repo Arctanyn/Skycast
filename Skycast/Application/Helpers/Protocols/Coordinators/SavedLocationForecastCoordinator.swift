@@ -9,4 +9,5 @@ import Foundation
 
 protocol SavedLocationForecastCoordinator: Coordinator {
     var finishFlow: VoidClosure? { get set }
+    func dismissModule()
 }

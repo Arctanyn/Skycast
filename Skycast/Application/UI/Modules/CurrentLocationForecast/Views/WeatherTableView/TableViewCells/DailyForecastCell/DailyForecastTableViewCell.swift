@@ -50,7 +50,7 @@ final class DailyForecastTableViewCell: BaseTableViewCell, ViewModelable {
     private lazy var mainHStack = UIStackView(
         axis: .horizontal,
         spacing: 10,
-        distribution: .fillEqually,
+        distribution: .equalSpacing,
         alignment: .center,
         arrangedSubviews: [weekdayLabel, weatherIconImageView, temperaturesHStack]
     )
@@ -94,7 +94,13 @@ final class DailyForecastTableViewCell: BaseTableViewCell, ViewModelable {
     }
     
     override func constraintViews() {
+        
         NSLayoutConstraint.activate([
+            lowTemperatureLabel.widthAnchor.constraint(equalToConstant: 50),
+            highTemperatureLabel.widthAnchor.constraint(equalToConstant: 50),
+            
+            weekdayLabel.widthAnchor.constraint(equalToConstant: 90),
+            
             mainHStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             mainHStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             mainHStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),

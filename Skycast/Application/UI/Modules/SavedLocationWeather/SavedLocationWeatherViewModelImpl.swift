@@ -27,7 +27,7 @@ final class SavedLocationWeatherViewModelImpl: SavedLocationWeatherViewModel {
         return ForecastViewViewModelImpl(weather: weather)
     }
     
-    func moduleWillDisappear() {
-        coordinator.finishFlow?()
+    func closePage() {
+        coordinator.dismissModule()
     }
 }

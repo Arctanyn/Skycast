@@ -28,10 +28,11 @@ final class SavedLocationForecastCoordinatorImpl: BaseCoordinator, SavedLocation
     override func start(with item: Any?) {
         guard let weather = item as? Weather? else { return }
         let module = assemblyBuilder.createSavedLocationWeatherForecastModule(weather: weather, coordinator: self)
-        router.push(module, animated: true)
+        router.presentInNavigation(module, animated: true, fullScreen: true)
     }
     
-    func finishCurrentFlow() {
+    func dismissModule() {
+        router.dismiss(animated: true)
         finishFlow?()
     }
     

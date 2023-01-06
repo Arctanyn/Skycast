@@ -92,7 +92,7 @@ final class HourlyForecastTableViewCell: BaseTableViewCell, ViewModelable {
         NSLayoutConstraint.activate([
             hourLabel.widthAnchor.constraint(equalToConstant: 50),
             
-            temperatureLabel.widthAnchor.constraint(equalToConstant: 50),
+            temperatureLabel.widthAnchor.constraint(equalToConstant: 60),
             temperatureLabel.heightAnchor.constraint(equalToConstant: 30),
             
             weatherIconImageView.widthAnchor.constraint(equalToConstant: 25),

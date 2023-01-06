@@ -568,8 +568,8 @@
 		94E5899F29562CD400D233CE /* TableViewHeaders */ = {
 			isa = PBXGroup;
 			children = (
-				94E589A029562CE700D233CE /* DailyForecastHeaderView */,
 				947B35D9294FAF08001DF032 /* LowHighWeatherTemperaturesView */,
+				94E589A029562CE700D233CE /* DailyForecastHeaderView */,
 			);
 			path = TableViewHeaders;
 			sourceTree = "<group>";

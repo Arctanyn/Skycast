@@ -26,18 +26,18 @@ final class SavedLocationForecastViewController: BaseViewController, ViewModelab
     
     private lazy var forecastView = ForecastView()
     
-    //MARK: - View Controller Lyfecycle
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        viewModel.moduleWillDisappear()
-    }
+    private lazy var closeButton: UIBarButtonItem = UIBarButtonItem(
+        title: "Close",
+        style: .plain,
+        target: self,
+        action: #selector(closeButtonTapped)
+    )
     
     //MARK: - Methods
     
     override func configureAppearance() {
         super.configureAppearance()
-        navigationItem.largeTitleDisplayMode = .never
+        setupNavigationBar()
     }
     
     override func setupViews() {
@@ -51,5 +51,22 @@ final class SavedLocationForecastViewController: BaseViewController, ViewModelab
             forecastView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             forecastView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+}
+
+//MARK: - Actions
+
+@objc private extension SavedLocationForecastViewController {
+    func closeButtonTapped() {
+        viewModel.closePage()
+    }
+}
+
+//MARK: - Private methods
+
+private extension SavedLocationForecastViewController {
+    func setupNavigationBar() {
+        navigationItem.leftBarButtonItem = closeButton
+        navigationController?.navigationBar.tintColor = .label
     }
 }

@@ -40,9 +40,10 @@ final class RouterImpl: Router {
         rootController.present(controller, animated: animated, completion: completion)
     }
     
-    func presentInNavigation(_ module: Presentable, animated: Bool) {
+    func presentInNavigation(_ module: Presentable, animated: Bool, fullScreen: Bool) {
         let controller = module.toPresent
         let navController = UINavigationController(rootViewController: controller)
+        navController.modalPresentationStyle = fullScreen ? .fullScreen : .automatic
         rootController.present(navController, animated: true)
     }
     

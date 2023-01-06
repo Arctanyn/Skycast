@@ -51,11 +51,7 @@ extension Publisher {
         map { $0 as String? }
             .assign(to: \.text, on: label)
     }
-    
-//    func mapToTemperature(in units: TemperatureUnits) -> AnyPublisher<Temperature, Never> where Output == Int, Failure == Never {
-//        map { Temperature(degrees: $0, units: units) }
-//            .eraseToAnyPublisher()
-//    }
+
     
     func compactMapToDayPeriod() -> AnyPublisher<DayPeriod, Never> where Output == Int, Failure == Never {
         compactMap {

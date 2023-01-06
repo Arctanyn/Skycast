@@ -38,6 +38,7 @@ class MyLocationsViewController: BaseViewController, ViewModelable {
             frame: .zero,
             collectionViewLayout: createCompositionalLayout()
         )
+        collectionView.isUserInteractionEnabled = true
         collectionView.backgroundColor = .clear
         collectionView.register(LocationCollectionViewCell.self, forCellWithReuseIdentifier: LocationCollectionViewCell.identifier)
         return collectionView
@@ -48,6 +49,7 @@ class MyLocationsViewController: BaseViewController, ViewModelable {
     override func viewDidLoad() {
         super.viewDidLoad()
         setLocalBindings()
+        addKeyboardHideTapGesture()
     }
     
     //MARK: - Methods
@@ -70,6 +72,14 @@ class MyLocationsViewController: BaseViewController, ViewModelable {
             locationsCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             locationsCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+}
+
+//MARK: - Actions
+
+@objc private extension MyLocationsViewController {
+    func dismissKeyboard() {
+        locationsSearchController.searchBar.searchTextField.resignFirstResponder()
     }
 }
 
@@ -96,6 +106,12 @@ private extension MyLocationsViewController {
         
         let section = NSCollectionLayoutSection(group: group)
         return UICollectionViewCompositionalLayout(section: section)
+    }
+    
+    func addKeyboardHideTapGesture() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
     }
     
     func setupNavigationBar() {

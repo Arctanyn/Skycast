@@ -9,5 +9,5 @@ import Foundation
 
 protocol SavedLocationWeatherViewModel {
     func viewModelForWeatherForecastView() -> ForecastViewViewModel
-    func moduleWillDisappear()
+    func closePage()
 }

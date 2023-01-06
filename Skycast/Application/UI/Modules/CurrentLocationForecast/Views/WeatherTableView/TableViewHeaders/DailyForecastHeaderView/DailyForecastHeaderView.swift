@@ -39,6 +39,9 @@ final class DailyForecastHeaderView: BaseView {
     
     override func constraintViews() {
         NSLayoutConstraint.activate([
+            lowLabel.widthAnchor.constraint(equalToConstant: 50),
+            hightLabel.widthAnchor.constraint(equalToConstant: 50),
+            
             labelsHStack.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
             labelsHStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
             labelsHStack.bottomAnchor.constraint(equalTo: bottomAnchor),

@@ -28,7 +28,7 @@ final class LocationForecastCoordinatorImpl: BaseCoordinator, LocationForecastCo
     override func start(with item: Any?) {
         guard let city = item as? City else { return }
         let module = assemblyBuilder.createLocationForecastModule(city: city, coordinator: self)
-        router.presentInNavigation(module, animated: true)
+        router.presentInNavigation(module, animated: true, fullScreen: false)
     }
 
     func dismissModule() {
