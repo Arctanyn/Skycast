@@ -47,15 +47,8 @@ final class CurrentLocationForecastViewController: BaseViewController, ViewModel
     
     //MARK: - Methods
     
-    override func configureAppearance() {
-        super.configureAppearance()
-
-    }
-    
     override func setupViews() {
-        view.addSubview(messageView, useAutoLayout: true)
-        messageView.isHidden = true
-        
+        view.addSubview(messageView, useAutoLayout: true)        
         view.addSubview(loadingIndicator, useAutoLayout: true)
         view.addSubview(forecastView, useAutoLayout: true)
     }
@@ -83,7 +76,6 @@ final class CurrentLocationForecastViewController: BaseViewController, ViewModel
 
 @objc private extension CurrentLocationForecastViewController {
     func messageViewActionButtonTapped() {
-        messageView.isHidden = true
         viewModel.updateLocation()
     }
 }
@@ -129,5 +121,7 @@ private extension CurrentLocationForecastViewController {
         } else {
             forecastView.alpha = 0
         }
+        
+        messageView.isHidden = true
     }
 }

@@ -11,4 +11,8 @@ extension Notification.Name {
     static var addCityToMyLocation: Notification.Name {
         return .init("addCityToMyLocations")
     }
+    
+    static var updateAfterBackground: Notification.Name {
+        return .init("updateAfterBackground")
+    }
 }

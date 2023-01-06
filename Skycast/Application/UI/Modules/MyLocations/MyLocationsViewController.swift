@@ -148,6 +148,7 @@ private extension MyLocationsViewController {
     func setLocalBindings() {
         NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification, object: locationsSearchController.searchBar.searchTextField)
             .compactMap { ($0.object as? UISearchTextField)?.text }
+            .compactMap { $0.isEmpty ? nil : $0 }
             .debounce(for: .seconds(0.5), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .sink { [weak self] searchText in
@@ -167,7 +168,7 @@ private extension MyLocationsViewController {
 
 extension MyLocationsViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.numberOfLocations
+        viewModel != nil ? viewModel.numberOfLocations : 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

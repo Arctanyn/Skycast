@@ -8,23 +8,28 @@
 import Foundation
 
 extension UserDefaults {
-    enum Keys: String {
-        case cities
-    }
     
     func saveCities(_ cities: [City]) {
         do {
             let data = try JSONEncoder().encode(cities)
-            set(data, forKey: Keys.cities.rawValue)
+            set(data, forKey: UserDefaultsKeys.cities)
         } catch {
             print(error.localizedDescription)
         }
     }
     
     func fetchCities() -> [City]? {
-        guard let data = self.data(forKey: Keys.cities.rawValue) else {
+        guard let data = self.data(forKey: UserDefaultsKeys.cities) else {
             return nil
         }
         return try? JSONDecoder().decode([City].self, from: data)
+    }
+    
+    func saveBackgroundModeEnteringTime(_ date: Date) {
+        setValue(date, forKey: UserDefaultsKeys.timeInBackground)
+    }
+    
+    func getBackgroundModeEnteringTime() -> Date? {
+        object(forKey: UserDefaultsKeys.timeInBackground) as? Date
     }
 }

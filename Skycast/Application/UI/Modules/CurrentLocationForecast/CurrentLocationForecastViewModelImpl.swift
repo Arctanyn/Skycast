@@ -73,6 +73,12 @@ private extension CurrentLocationForecastViewModelImpl {
                 self?.errorSubject.send(error)
             }
             .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: .updateAfterBackground)
+            .sink { [weak self] _ in
+                self?.updateLocation()
+            }
+            .store(in: &cancellables)
     }
     
     func requestWeather(for location: CLLocation) {
