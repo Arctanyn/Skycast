@@ -26,6 +26,7 @@ final class HourlyForecastCollectionViewCell: BaseCollectionViewCell, ViewModela
         tableView.backgroundColor = .clear
         tableView.allowsSelection = false
         tableView.showsVerticalScrollIndicator = false
+        tableView.separatorStyle = .none
         tableView.register(HourlyForecastTableViewCell.self, forCellReuseIdentifier: HourlyForecastTableViewCell.identifier)
         return tableView
     }()
@@ -62,6 +63,7 @@ extension HourlyForecastCollectionViewCell: UITableViewDataSource, UITableViewDe
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: HourlyForecastTableViewCell.identifier, for: indexPath) as! HourlyForecastTableViewCell
         cell.viewModel = viewModel.viewModelForCell(at: indexPath)
+        cell.layoutIfNeeded()
         return cell
     }
 }

@@ -26,6 +26,20 @@ class MyLocationsViewController: BaseViewController, ViewModelable {
 
     //MARK: - Views
     
+    private lazy var locationsRefreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = .white
+        refreshControl.attributedTitle = NSAttributedString(
+            string: "Updating...",
+            attributes: [
+                .foregroundColor: UIColor.label,
+                .font: Resources.Fonts.system(size: 14, weight: .semibold)
+            ]
+        )
+        refreshControl.addTarget(self, action: #selector(collectionViewDidPullToRefresh), for: .valueChanged)
+        return refreshControl
+    }()
+    
     private lazy var locationsSearchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: LocationsSearchResultsController())
         searchController.searchBar.tintColor = .white
@@ -38,6 +52,7 @@ class MyLocationsViewController: BaseViewController, ViewModelable {
             frame: .zero,
             collectionViewLayout: createCompositionalLayout()
         )
+        collectionView.refreshControl = locationsRefreshControl
         collectionView.isUserInteractionEnabled = true
         collectionView.backgroundColor = .clear
         collectionView.register(LocationCollectionViewCell.self, forCellWithReuseIdentifier: LocationCollectionViewCell.identifier)
@@ -80,6 +95,13 @@ class MyLocationsViewController: BaseViewController, ViewModelable {
 @objc private extension MyLocationsViewController {
     func dismissKeyboard() {
         locationsSearchController.searchBar.searchTextField.resignFirstResponder()
+    }
+    
+    func collectionViewDidPullToRefresh() {
+        UIView.transition(with: locationsCollectionView, duration: 0.5) {
+            self.locationsCollectionView.reloadData()
+        }
+        locationsRefreshControl.endRefreshing()
     }
 }
 
@@ -180,7 +202,7 @@ extension MyLocationsViewController: UICollectionViewDataSource, UICollectionVie
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard
             let cell = collectionView.cellForItem(at: indexPath) as? LocationCollectionViewCell,
-            cell.isWeatherRecieved
+            cell.isAllowsSelection
         else { return }
         viewModel.showForecastForLocation(with: cell.viewModel.locationWeather)
     }

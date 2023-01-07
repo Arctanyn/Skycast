@@ -17,10 +17,11 @@ class LocationCollectionViewCell: BaseCollectionViewCell, ViewModelable {
     var viewModel: ViewModel! {
         didSet {
             setBindings()
+            viewModel.getWeather()
         }
     }
     
-    var isWeatherRecieved = false
+    var isAllowsSelection = false
     private var cancellables = Set<AnyCancellable>()
     
     //MARK: - Views
@@ -116,10 +117,8 @@ private extension LocationCollectionViewCell {
     func setBindings() {
         viewModel.weatherRecievedPublisher
             .sink { [weak self] isRecieved in
-                self?.isWeatherRecieved = isRecieved
-                if !isRecieved {
-                    self?.viewModel.getWeather()
-                }
+                self?.isAllowsSelection = isRecieved
+                self?.updateUI(isWeatherRecieved: isRecieved)
             }
             .store(in: &cancellables)
         
@@ -158,6 +157,12 @@ private extension LocationCollectionViewCell {
         viewModel.conditionPublisher
             .assignToTextOnLabel(conditionLabel)
             .store(in: &cancellables)
+    }
+    
+    func updateUI(isWeatherRecieved: Bool) {
+        UIView.animate(withDuration: 0.5) { [weak self] in
+            self?.mainVStack.alpha = isWeatherRecieved ? 1 : 0
+        }
     }
     
     func addShadow() {
