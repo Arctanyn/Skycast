@@ -105,6 +105,8 @@ final class ForecastView: BaseView, ViewModelable {
             mainVStack.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
+    
+    var scrollingBySegment = false
 }
 
 //MARK: - Actions

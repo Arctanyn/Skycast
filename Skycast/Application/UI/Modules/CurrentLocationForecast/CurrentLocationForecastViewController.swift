@@ -28,8 +28,8 @@ final class CurrentLocationForecastViewController: BaseViewController, ViewModel
     
     private lazy var forecastView = ForecastView()
     
-    private lazy var messageView: MessageViewWithAction = {
-        let msgView = MessageViewWithAction()
+    private lazy var messageView: MessageActionView = {
+        let msgView = MessageActionView()
         msgView.setupMessage(
             withTitle: "Weather is unavailable",
             messageDescription: "Could not get weather information. Check your internet connection and try again",

@@ -99,7 +99,7 @@ final class DailyForecastTableViewCell: BaseTableViewCell, ViewModelable {
             lowTemperatureLabel.widthAnchor.constraint(equalToConstant: 50),
             highTemperatureLabel.widthAnchor.constraint(equalToConstant: 50),
             
-            weekdayLabel.widthAnchor.constraint(equalToConstant: 90),
+            weekdayLabel.widthAnchor.constraint(equalToConstant: 100),
             
             mainHStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             mainHStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),

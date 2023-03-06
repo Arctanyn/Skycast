@@ -29,7 +29,9 @@ class LocationCollectionViewCell: BaseCollectionViewCell, ViewModelable {
     private lazy var mainVStack = UIStackView(
         axis: .vertical,
         spacing: 10,
+        alignment: .leading,
         arrangedSubviews: [
+            locationLabel,
             mainHStack,
             conditionLabel,
             lowHighTemperatureHStack
@@ -38,7 +40,7 @@ class LocationCollectionViewCell: BaseCollectionViewCell, ViewModelable {
     
     private lazy var mainHStack = UIStackView(
         axis: .horizontal,
-        spacing: 10,
+        spacing: 20,
         arrangedSubviews: [temperatureLabel, weatherIconImageView]
     )
     
@@ -96,17 +98,22 @@ class LocationCollectionViewCell: BaseCollectionViewCell, ViewModelable {
     override func constraintViews() {
         lowTemperatureLabel.setContentHuggingPriority(.required, for: .horizontal)
         NSLayoutConstraint.activate([
-            locationLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            locationLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            locationLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            
+//            locationLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
+//            locationLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+//            locationLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+//
             weatherIconImageView.heightAnchor.constraint(equalToConstant: 35),
             weatherIconImageView.widthAnchor.constraint(equalTo: weatherIconImageView.heightAnchor),
             
-            mainVStack.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 10),
+            mainVStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             mainVStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             mainVStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             mainVStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
+//
+//            mainVStack.topAnchor.constraint(greaterThanOrEqualTo: locationLabel.bottomAnchor, constant: 20),
+//            mainVStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+//            mainVStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+//            mainVStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
         ])
     }
 }

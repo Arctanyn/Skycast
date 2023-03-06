@@ -91,7 +91,7 @@ final class CurrentWeatherView: BaseView, ViewModelable {
     
     private lazy var temperatureLabel: UILabel = {
         let label = UILabel()
-        label.font = Resources.Fonts.system(size: 40, weight: .bold)
+        label.font = Resources.Fonts.system(size: 35, weight: .bold)
         return label
     }()
     
@@ -143,7 +143,7 @@ final class CurrentWeatherView: BaseView, ViewModelable {
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 20),
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             
-            weatherIconView.widthAnchor.constraint(equalToConstant: 80),
+            weatherIconView.widthAnchor.constraint(equalToConstant: 60),
             
             locationImageView.widthAnchor.constraint(equalToConstant: 20),
             locationImageView.heightAnchor.constraint(equalTo: locationImageView.widthAnchor),

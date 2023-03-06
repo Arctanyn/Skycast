@@ -97,13 +97,12 @@ private extension CurrentLocationForecastViewModelImpl {
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] completion in
                     if case .failure(let error) = completion {
-                        self?.isLoading = false
                         self?.isRecievedWeather = false
                         self?.errorSubject.send(error)
                     }
+                    self?.isLoading = false
                 } receiveValue: { [weak self] weather in
                     self?.weather = weather
-                    self?.isLoading = false
                     self?.isRecievedWeather = true
                 }
                 .store(in: &cancellables)

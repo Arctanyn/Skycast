@@ -1,13 +1,13 @@
 //
-//  MessageViewWithAction.swift
+//  MessageActionView.swift
 //  Skycast
 //
-//  Created by Малиль Дугулюбгов on 21.12.2022.
+//  Created by Малиль Дугулюбгов on 06.03.2023.
 //
 
 import UIKit
 
-final class MessageViewWithAction: BaseView {
+final class MessageActionView: BaseView {
     
     //MARK: - Views
     
@@ -67,4 +67,5 @@ final class MessageViewWithAction: BaseView {
     func addTargetToButton(_ target: Any?, action: Selector, forEvent event: UIControl.Event) {
         actionButton.addTarget(target, action: action, for: event)
     }
+    
 }
